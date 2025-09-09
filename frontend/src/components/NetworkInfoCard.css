@@ -1,0 +1,84 @@
+.network-info-card {
+  background-color: var(--card-background);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 1.5rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.network-info-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 0 15px var(--accent-color);
+  border-color: var(--accent-color);
+}
+
+.network-info-card h2 {
+  font-family: 'Orbitron', sans-serif;
+  color: var(--accent-color);
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.network-section {
+  margin-bottom: 1.5rem;
+}
+
+.network-section h3 {
+  font-size: 1.1rem;
+  color: var(--primary-text-color);
+  margin-bottom: 1rem;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 0.5rem;
+}
+
+.interface-card {
+  background-color: #222;
+  padding: 1rem;
+  border-radius: 5px;
+  margin-bottom: 1rem;
+  border-left: 3px solid var(--accent-color);
+}
+
+.interface-card h4 {
+  font-size: 1rem;
+  color: var(--primary-text-color);
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+}
+
+.address-item {
+  font-size: 0.9rem;
+  color: var(--secondary-text-color);
+  margin-bottom: 0.25rem;
+}
+
+.address-type {
+  font-weight: 600;
+  color: var(--primary-text-color);
+}
+
+.io-stats, .connections-list {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.5rem;
+}
+
+.stat-item, .connection-item {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  padding: 0.5rem;
+  border-radius: 4px;
+  background-color: #222;
+}
+
+.stat-label, .connection-address {
+  color: var(--primary-text-color);
+  font-weight: 600;
+}
+
+.stat-value, .connection-status {
+  color: var(--secondary-text-color);
+}

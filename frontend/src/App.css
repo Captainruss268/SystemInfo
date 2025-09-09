@@ -1,0 +1,59 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Poppins:wght@300;400;600&display=swap');
+
+:root {
+  --background-color: #0a0a0a;
+  --primary-text-color: #e0e0e0;
+  --secondary-text-color: #a0a0a0;
+  --accent-color: #00ffff;
+  --card-background: #1a1a1a;
+  --border-color: #2a2a2a;
+  --hover-color: #222;
+}
+
+body {
+  background-color: var(--background-color);
+  color: var(--primary-text-color);
+  font-family: 'Poppins', sans-serif;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+.app-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem;
+  min-height: 100vh;
+}
+
+.app-header {
+  width: 100%;
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.app-header h1 {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 3rem;
+  color: var(--accent-color);
+  text-shadow: 0 0 10px var(--accent-color);
+  margin: 0;
+}
+
+.main-content {
+  width: 100%;
+  max-width: 1200px;
+}
+
+.info-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 2rem;
+}
+
+.error-message, .loading-message {
+  text-align: center;
+  font-size: 1.2rem;
+  padding: 2rem;
+}

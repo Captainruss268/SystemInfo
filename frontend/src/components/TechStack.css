@@ -1,0 +1,46 @@
+.tech-stack-container {
+  width: 100%;
+  max-width: 1200px;
+  padding: 2rem;
+  margin-top: 2rem;
+  text-align: center;
+}
+
+.tech-stack-container h2 {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 2rem;
+  color: var(--accent-color);
+  margin-bottom: 2rem;
+}
+
+.tech-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 2rem;
+}
+
+.tech-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  transition: transform 0.3s ease;
+}
+
+.tech-item:hover {
+  transform: scale(1.1);
+}
+
+.tech-item svg {
+  transition: all 0.3s ease;
+}
+
+.tech-item:hover svg {
+  filter: drop-shadow(0 0 5px var(--accent-color));
+}
+
+.tech-item span {
+  font-size: 1rem;
+  color: var(--primary-text-color);
+}
