@@ -59,6 +59,41 @@
   color: var(--primary-text-color);
 }
 
+.ip-info p {
+  color: var(--secondary-text-color);
+  margin: 0;
+}
+
+.location-details {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.5rem;
+}
+
+.location-item {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  padding: 0.5rem;
+  border-radius: 4px;
+  background-color: #222;
+}
+
+.location-label {
+  color: var(--primary-text-color);
+  font-weight: 600;
+}
+
+.location-value {
+  color: var(--secondary-text-color);
+}
+
+.io-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
 .io-stats, .connections-list {
   display: grid;
   grid-template-columns: 1fr;
@@ -81,4 +116,19 @@
 
 .stat-value, .connection-status {
   color: var(--secondary-text-color);
+}
+
+.reset-button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 5px 10px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.reset-button:hover {
+  background-color: #0056b3;
 }
