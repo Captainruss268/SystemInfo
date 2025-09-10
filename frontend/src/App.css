@@ -40,10 +40,12 @@ body {
 
 .app-header {
   width: 100%;
+  max-width: 1200px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 2rem;
+  position: relative;
 }
 
 .app-header h1 {
@@ -54,14 +56,48 @@ body {
   margin: 0;
 }
 
+.app-header .theme-toggle {
+  position: relative;
+  right: 0;
+  top: 0;
+}
+
+.section-nav {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.nav-link {
+  background-color: transparent;
+  border: 1px solid var(--accent-color);
+  color: var(--accent-color);
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.nav-link:hover {
+  background-color: var(--accent-color);
+  color: #000;
+}
+
 .main-content {
   width: 100%;
   max-width: 1200px;
 }
 
 .info-cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  display: flex;
+  flex-direction: column;
   gap: 2rem;
 }
 
@@ -72,12 +108,14 @@ body {
 }
 
 .performance-chart-container {
+  margin-top: 2rem;
   margin-bottom: 2rem;
   background-color: var(--card-background);
   border: 1px solid var(--border-color);
   border-radius: 8px;
   padding: 1.5rem;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  width: 100%;
 }
 
 .performance-chart-container:hover {

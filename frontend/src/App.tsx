@@ -85,17 +85,25 @@ const AppContent: React.FC = () => {
         <h1>System Monitor</h1>
         <ThemeToggle />
       </header>
+      <nav className="section-nav">
+        <button className="nav-link" onClick={() => document.querySelector('.network-info-card')?.scrollIntoView({ behavior: 'smooth' })}>Network</button>
+        <button className="nav-link" onClick={() => document.querySelector('.system-info-card')?.scrollIntoView({ behavior: 'smooth' })}>System & CPU</button>
+        <button className="nav-link" onClick={() => document.querySelector('.hardware-info-card')?.scrollIntoView({ behavior: 'smooth' })}>Hardware</button>
+        <button className="nav-link" onClick={() => document.querySelector('.performance-chart-container')?.scrollIntoView({ behavior: 'smooth' })}>Performance</button>
+      </nav>
       <main className="main-content">
-        <div className="performance-chart-container">
-          <PerformanceChart data={historicalData} />
-        </div>
         {error && <p className="error-message">Error fetching data: {error}</p>}
         {systemInfo && hardwareInfo ? (
-          <div className="info-cards">
-            <SystemInfoCard data={systemInfo} hardwareData={hardwareInfo} />
-            <NetworkInfoCard data={systemInfo.network} />
-            <HardwareInfoCard data={hardwareInfo} />
-          </div>
+          <>
+            <div className="info-cards">
+              <NetworkInfoCard data={systemInfo.network} />
+              <SystemInfoCard data={systemInfo} hardwareData={hardwareInfo} />
+              <HardwareInfoCard data={hardwareInfo} />
+            </div>
+            <div className="performance-chart-container">
+              <PerformanceChart data={historicalData} />
+            </div>
+          </>
         ) : (
           !error && <p className="loading-message">Loading system information...</p>
         )}

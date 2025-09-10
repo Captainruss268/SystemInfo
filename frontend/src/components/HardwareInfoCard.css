@@ -1,19 +1,28 @@
 .hardware-info-card {
-    background-color: #2c2c2c;
-    border-radius: 8px;
-    padding: 20px;
-    color: #ffffff;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    width: 100%;
-    max-width: 400px;
-  }
+  background-color: var(--card-background);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 1.5rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  width: 100%;
+}
+
+.hardware-info-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 0 15px var(--accent-color);
+  border-color: var(--accent-color);
+}
   
   .hardware-info-card h2 {
+    font-family: 'Orbitron', sans-serif;
+    color: var(--accent-color);
     margin-top: 0;
+    margin-bottom: 1.5rem;
+    text-align: center;
     font-size: 1.5em;
-    border-bottom: 2px solid #444;
+    border-bottom: 1px solid var(--border-color);
     padding-bottom: 10px;
-    margin-bottom: 15px;
   }
   
   .hardware-section {
@@ -21,23 +30,28 @@
   }
   
   .hardware-section h3 {
-    font-size: 1.2em;
-    color: #a0a0a0;
-    margin-bottom: 10px;
+    font-size: 1.1rem;
+    color: var(--primary-text-color);
+    margin-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 0.5rem;
   }
-  
+
   .hardware-section ul {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 0.75rem;
     list-style-type: none;
     padding: 0;
   }
-  
+
   .hardware-section li {
-    background-color: #333;
-    padding: 8px;
+    background-color: var(--hover-color);
+    padding: 0.75rem;
     border-radius: 4px;
-    margin-bottom: 5px;
+    border-left: 3px solid var(--accent-color);
   }
-  
+
   .hardware-section strong {
-    color: #4caf50;
+    color: #00ffff;
   }

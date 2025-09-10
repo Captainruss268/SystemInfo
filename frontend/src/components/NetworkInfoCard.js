@@ -50,10 +50,10 @@ const NetworkInfoCard = ({ data }) => {
                     <span className="location-value">{networkData.local_ipv6}</span>
                   </div>
                 )}
-                {networkData.ip_info.country && (
+                {networkData.ip_info.city && (
                   <div className="location-item">
-                    <span className="location-label">Country:</span>
-                    <span className="location-value">{networkData.ip_info.country}</span>
+                    <span className="location-label">City:</span>
+                    <span className="location-value">{networkData.ip_info.city}</span>
                   </div>
                 )}
                 {networkData.ip_info.region && (
@@ -62,10 +62,10 @@ const NetworkInfoCard = ({ data }) => {
                     <span className="location-value">{networkData.ip_info.region}</span>
                   </div>
                 )}
-                {networkData.ip_info.city && (
+                {networkData.ip_info.country && (
                   <div className="location-item">
-                    <span className="location-label">City:</span>
-                    <span className="location-value">{networkData.ip_info.city}</span>
+                    <span className="location-label">Country:</span>
+                    <span className="location-value">{networkData.ip_info.country}</span>
                   </div>
                 )}
               </div>
