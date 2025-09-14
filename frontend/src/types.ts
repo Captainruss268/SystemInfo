@@ -4,6 +4,11 @@ export interface CpuInfo {
   cpu_count_physical: number;
   cpu_count_logical: number;
   cpu_percent: number[];
+  core_types?: {
+    p_cores: number;
+    e_cores: number;
+    total_cores: number;
+  };
   cpu_freq?: {
     current: number;
     min: number;

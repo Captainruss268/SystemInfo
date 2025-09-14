@@ -29,10 +29,18 @@
 
 
 .info-item {
-  background-color: #222;
+  background-color: var(--card-background);
+  border: 1px solid var(--border-color);
   padding: 1rem;
   border-radius: 5px;
   border-left: 3px solid var(--accent-color);
+}
+
+/* Light mode enhancements for info-item */
+[data-theme="light"] .info-item {
+  background-color: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .info-item h3 {
@@ -72,20 +80,30 @@
 
 .progress-bar-container {
   flex-grow: 1;
-  background-color: #333;
+  background-color: var(--hover-color);
   border-radius: 5px;
   overflow: hidden;
   height: 20px;
 }
 
+/* Light mode progress bar improvements */
+[data-theme="light"] .progress-bar-container {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
 .progress-bar {
   background-color: var(--accent-color);
   height: 100%;
-  color: #fff;
+  color: var(--card-background);
   text-align: center;
   line-height: 20px;
   font-size: 0.8rem;
   transition: width 0.5s ease-in-out;
+}
+
+/* Light mode progress bar text color */
+[data-theme="light"] .progress-bar {
+  color: white;
 }
 
 .memory-item {
@@ -117,5 +135,39 @@
   opacity: 0.3;
 }
 .idle-core .progress-bar {
-  background-color: #666;
+  background-color: var(--secondary-text-color);
+}
+
+/* Performance and Efficiency Core Styles */
+.performance-core .progress-bar {
+  background-color: #ff6b35; /* Orange/red for performance cores */
+}
+
+.efficiency-core .progress-bar {
+  background-color: #4ecdc4; /* Teal/cyan for efficiency cores */
+}
+
+.performance-core span {
+  color: #ff6b35;
+  font-weight: 600;
+}
+
+.efficiency-core span {
+  color: #4ecdc4;
+  font-weight: 600;
+}
+
+/* Core information display */
+.core-info-display {
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.core-summary {
+  text-align: center;
+  color: var(--primary-text-color);
+  font-size: 0.9rem;
+  margin: 0.5rem 0;
+  font-weight: 500;
 }

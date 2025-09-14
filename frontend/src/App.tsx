@@ -4,8 +4,9 @@ import NetworkInfoCard from './components/NetworkInfoCard';
 import HardwareInfoCard from './components/HardwareInfoCard';
 import DynamicBackground from './components/DynamicBackground';
 import TechStack from './components/TechStack';
-import ThemeToggle from './components/ThemeToggle';
+
 import PerformanceChart from './components/PerformanceChart';
+import SidebarNavigation from './components/SidebarNavigation';
 import { ThemeProvider } from './context/ThemeContext';
 import { useHistoricalData } from './hooks/useHistoricalData';
 import { SystemInfoData, HardwareInfo } from './types';
@@ -80,17 +81,11 @@ const AppContent: React.FC = () => {
 
   return (
     <div className="app-container">
+      <SidebarNavigation />
       <DynamicBackground />
       <header className="app-header">
         <h1>System Monitor</h1>
-        <ThemeToggle />
       </header>
-      <nav className="section-nav">
-        <button className="nav-link" onClick={() => document.querySelector('.network-info-card')?.scrollIntoView({ behavior: 'smooth' })}>Network</button>
-        <button className="nav-link" onClick={() => document.querySelector('.system-info-card')?.scrollIntoView({ behavior: 'smooth' })}>System & CPU</button>
-        <button className="nav-link" onClick={() => document.querySelector('.hardware-info-card')?.scrollIntoView({ behavior: 'smooth' })}>Hardware</button>
-        <button className="nav-link" onClick={() => document.querySelector('.performance-chart-container')?.scrollIntoView({ behavior: 'smooth' })}>Performance</button>
-      </nav>
       <main className="main-content">
         {error && <p className="error-message">Error fetching data: {error}</p>}
         {systemInfo && hardwareInfo ? (

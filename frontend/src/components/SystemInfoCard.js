@@ -17,6 +17,7 @@ const SystemInfoCard = ({ data, hardwareData }) => {
   const processorName = hardwareData.processor?.name || platform.processor;
   const cores = hardwareData.processor?.cores || cpu.cpu_count_physical;
   const logicalProcessors = hardwareData.processor?.logical_processors || cpu.cpu_count_logical;
+  const coreTypes = cpu.core_types || { p_cores: 0, e_cores: cores, total_cores: cores };
 
   return (
     <div className="card system-info-card">
@@ -68,13 +69,44 @@ const SystemInfoCard = ({ data, hardwareData }) => {
 
         <div className="info-item cpu-usage-item">
           <h3>CPU Usage by Core</h3>
+          {coreTypes.p_cores > 0 || coreTypes.e_cores > 0 ? (
+            <div className="core-info-display">
+              <p className="core-summary">
+                {coreTypes.p_cores > 0 && `${coreTypes.p_cores} Performance Core${coreTypes.p_cores > 1 ? 's' : ''}`}
+                {coreTypes.p_cores > 0 && coreTypes.e_cores > 0 && ', '}
+                {coreTypes.e_cores > 0 && `${coreTypes.e_cores} Efficiency Core${coreTypes.e_cores > 1 ? 's' : ''}`}
+              </p>
+            </div>
+          ) : null}
           <div className="cpu-cores">
             {cpu.cpu_percent.map((core, index) => {
               let label = 'Core';
               let coreNum = index + 1;
+              let coreType = '';
+
+              // Determine if this is a P-core or E-core
+              if (coreTypes.p_cores > 0 && coreTypes.e_cores > 0) {
+                // Hybrid CPU with both types (Intel/AMD Ryzen/Qualcomm)
+                if (index < coreTypes.p_cores) {
+                  coreType = 'P';
+                  coreNum = index + 1;
+                } else {
+                  coreType = 'E';
+                  coreNum = index - coreTypes.p_cores + 1;
+                }
+                label = `${coreType}-Core`;
+              } else if (coreTypes.p_cores === cores && coreTypes.e_cores === 0) {
+                // Apple Silicon or other unified-performance CPUs
+                label = `P-Core`;
+                coreNum = index + 1;
+                coreType = 'P';
+              } else {
+                // Standard CPUs without hybrid architecture
+                label = 'Core';
+              }
 
               return (
-                <div key={index} className={`cpu-core ${core < 5 ? 'idle-core' : ''}`}>
+                <div key={index} className={`cpu-core ${coreType === 'P' ? 'performance-core' : coreType === 'E' ? 'efficiency-core' : ''} ${core < 5 ? 'idle-core' : ''}`}>
                   <span>{label} {coreNum}</span>
                   <div className="progress-bar-container">
                     <div

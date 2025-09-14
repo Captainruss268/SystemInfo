@@ -37,6 +37,76 @@ ip_cache = {
 }
 CACHE_DURATION = 300  # seconds
 
+def detect_core_types(physical_cores, logical_processors, hardware_info=None):
+    """Detect P-cores vs E-cores based on CPU architecture"""
+    try:
+        if physical_cores == logical_processors:
+            # All cores are the same (older CPUs without hybrid cores)
+            return {
+                'p_cores': 0,
+                'e_cores': physical_cores,
+                'total_cores': physical_cores
+            }
+
+        # Calculate P-cores as the difference between logical and physical cores
+        # Since P-cores support 2 threads each while E-cores support 1
+        p_cores = logical_processors - physical_cores
+        e_cores = physical_cores - p_cores
+
+        # Verify against hardware info if available
+        if hardware_info and 'processor' in hardware_info:
+            processor_name = hardware_info['processor'].get('name', '').lower()
+            manufacturer = hardware_info['processor'].get('manufacturer', '').lower()
+
+            # Intel hybrid processors
+            if any(arch in processor_name for arch in ['intel', 'core i']) or 'intel' in manufacturer:
+                # Intel Raptor Lake/Meteor Lake/Arrow Lake have P+E cores
+                if 'i5' in processor_name:
+                    p_cores = min(p_cores, 6)  # i5 typically 6P+(4-8)E
+                elif 'i7' in processor_name:
+                    p_cores = min(p_cores, 8)  # i7 typically 8P+(4-8)E
+                elif 'i9' in processor_name and physical_cores >= 16:
+                    p_cores = min(p_cores, 8)  # i9 typically 8P+8E
+                # Recalculate E-cores after capping P-cores
+                e_cores = physical_cores - p_cores
+
+            # AMD Ryzen 7000 series and newer have P+E cores
+            elif 'amd' in manufacturer and any(arch in processor_name for arch in ['ryzen 7', 'ryzen 8', 'ryzen 9']):
+                # AMD Ryzen 7000: 8 cores = 6P + 2E, 16 cores = 8P + 8E
+                if physical_cores == 8:
+                    p_cores = min(p_cores, 6)
+                elif physical_cores == 16:
+                    p_cores = min(p_cores, 8)
+                e_cores = physical_cores - p_cores
+
+            # Apple Silicon (M series and newer) - all cores are high-performance
+            elif any(arch in processor_name for arch in ['apple m', 'apple silicon', 'm1', 'm2', 'm3', 'm4']):
+                # Apple Silicon cores are all performance-oriented but can throttle
+                p_cores = physical_cores  # All cores are P-type
+                e_cores = 0
+
+            # Qualcomm Snapdragon X Elite series
+            elif 'qualcomm' in manufacturer or 'snapdragon' in processor_name:
+                # Snapdragon X Elite: 12 cores = 8P + 4E
+                if physical_cores == 12:
+                    p_cores = min(p_cores, 8)
+                e_cores = physical_cores - p_cores
+
+        return {
+            'p_cores': p_cores,
+            'e_cores': e_cores,
+            'total_cores': physical_cores
+        }
+
+    except Exception as e:
+        logging.warning(f"Error in core type detection: {e}")
+        # Fallback to equal distribution if detection fails
+        return {
+            'p_cores': 0,
+            'e_cores': physical_cores,
+            'total_cores': physical_cores
+        }
+
 def get_cpu_info():
     """Get detailed CPU information"""
     try:
@@ -66,99 +136,46 @@ def get_cpu_info():
         logging.error("Error getting CPU info: %s", e)
         return None
 
-def get_intel_codename(generation, name):
-    """Get Intel CPU microarchitecture code name"""
-    # Intel desktop microarchitectures
-    desktop_codenames = {
-        '1': 'P6',
-        '2': 'Pentium Pro',
-        '3': 'P6',
-        '4': 'NetBurst',
-        '5': 'NetBurst',
-        '6': 'Core',
-        '7': 'Nehalem',
-        '8': 'Nehalem',
-        '9': 'Sandy Bridge',
-        '10': 'Ivy Bridge',
-        '11': 'Haswell',
-        '12': 'Broadwell',
-        '13': 'Raptor Lake',
-        '14': 'Meteor Lake',
-        '15': 'Arrow Lake'
-    }
-
-    # Extract generation number (remove 'th Gen')
-    gen_num = generation.split('th')[0] if generation else None
-
-    # Safely handle the case where gen_num might be None
-    if gen_num:
-        codename = desktop_codenames.get(gen_num, f'Gen {gen_num}')
-    else:
-        codename = 'Unknown'
-
-    # Add mobile suffix if it's a laptop CPU
-    if name and ('Laptop' in name or 'M' in name.split()[-1] or 'Mobile' in name):
-        codename += ' (Mobile)'
-
-    return codename
-
-def get_amd_codename(generation, name):
-    """Get AMD CPU microarchitecture code name"""
-    # AMD microarchitectures by generation/series
-    zen_codenames = {
-        'Ryzen 2': 'Pinnacle Ridge',
-        'Ryzen 3': 'Matisse',
-        'Ryzen 4': 'Renior',
-        'Ryzen 5': 'Vermeer/Lucienne',
-        'Ryzen 6': 'Raphael',
-        'Ryzen 7': 'Phoenix',
-        'Ryzen 8': 'Raphael',
-        'Ryzen 9': 'Zen 4'
-    }
-
-    # Try to match AMD Ryzen series
-    for series, codename in zen_codenames.items():
-        if series in name:
-            return codename
-
-    # Fallback for generation-based
-    return f'Zen Architecture (Gen {generation})' if generation else 'Zen Architecture'
-
-def clean_cpu_name(name):
-    """Clean CPU name by removing generation from the beginning"""
+def process_cpu_name(name, generation=None, manufacturer='Intel'):
+    """Process CPU name: clean, format, and get codename"""
     if not name:
-        return name
+        return name, 'Unknown'
 
-    # Patterns to remove: "13th Gen ", "12nd Gen ", etc.
-    patterns = [
-        r'^\d+(?:st|nd|rd|th)\s+Gen\s+',  # "13th Gen "
-        r'^\d+(?:st|nd|rd|th)-Generation\s+',  # "13th-Generation "
-        r'^\d+(?:st|nd|rd|th)\s+',  # "13th "
-        r'^\d+(?:st|nd|rd|th)-Gen\s+',  # "13th-Gen "
-    ]
+    # Clean name - remove generation prefixes and trademarks
+    cleaned = re.sub(r'^\d+(?:st|nd|rd|th)\s+G(?:en|eneration)?\s+|[®™©®®™®©®™©®®™®©®™©]', '', name)
 
-    for pattern in patterns:
-        name = re.sub(pattern, '', name, flags=re.IGNORECASE)
+    # Remove registered/mark symbols
+    cleaned = re.sub(r'\(R\)|\(TM\)', '', cleaned, flags=re.IGNORECASE)
 
-    return name.strip()
+    # Replace GenuineIntel with Intel
+    final_name = cleaned.replace('GenuineIntel', 'Intel').strip()
 
-def format_cpu_name(name):
-    """Format CPU name for better display"""
-    if not name:
-        return name
+    # Add hyphen for Intel i-series: i9 -> i9-
+    if manufacturer == 'Intel' and 'Intel' in final_name:
+        final_name = re.sub(r'\b(i\d+)([^-])', r'\1-\2', final_name)
 
-    # Replace GenuineIntel with just Intel
-    name = name.replace('GenuineIntel', 'Intel')
+    # Get codename if generation is available
+    codename = 'Unknown'
+    if generation and 'Intel' in manufacturer:
+        gen_num = generation.split('th')[0] if 'th' in generation else None
+        intel_codenames = {
+            '13': 'Raptor Lake', '14': 'Meteor Lake', '15': 'Arrow Lake',
+            '12': 'Broadwell', '11': 'Haswell', '10': 'Ivy Bridge',
+            '9': 'Sandy Bridge', '7': 'Nehalem', '6': 'Core', '4': 'NetBurst'
+        }
+        codename = intel_codenames.get(gen_num, f'Gen {gen_num}' if gen_num else 'Unknown')
 
-    # Handle Intel and AMD CPU naming
-    if 'Intel' in name:
-        # Add hyphen for Intel i-series: i9 -> i9-
-        name = re.sub(r'\b(i\d+)([^-])', r'\1-\2', name)
-    elif 'AMD' in name:
-        # AMD typically doesn't need hyphen formatting, but clean up if needed
-        pass
+        # Add mobile suffix for laptop CPUs
+        if any(term in cleaned.lower() for term in ['laptop', 'mobile', ' m ']):
+            codename += ' (Mobile)'
 
-    return name
+    elif generation and 'AMD' in manufacturer:
+        if any(series in name for series in ['Ryzen 9', 'Ryzen 8', 'Ryzen 7']):
+            codename = 'Zen 4'
+        else:
+            codename = 'Zen Architecture'
+
+    return final_name, codename
 
 def get_memory_info():
     """Get detailed memory information"""
@@ -199,16 +216,45 @@ def get_disk_info():
         logging.error("Error getting disk info", exc_info=True)
         return None
 
+def _normalize_ip_response(service_url, data):
+    """Normalize IP response from different APIs"""
+    if 'ipinfo.io' in service_url:
+        return {
+            'ip': data.get('ip'),
+            'country': data.get('country'),
+            'region': data.get('region'),
+            'city': data.get('city')
+        }
+    elif 'ip-api.com' in service_url:
+        return {
+            'ip': data.get('query'),
+            'country': data.get('country'),
+            'region': data.get('regionName'),
+            'city': data.get('city')
+        }
+    elif 'api.ipify.org' in service_url:
+        return {
+            'ip': data.get('ip'),
+            'country': 'Unknown',
+            'region': 'Unknown',
+            'city': 'Unknown'
+        }
+    else:  # httpbin.org
+        return {
+            'ip': data.get('origin', '').split(',')[0].strip(),
+            'country': 'Unknown',
+            'region': 'Unknown',
+            'city': 'Unknown'
+        }
+
 def fetch_ip_info_with_retry():
-    """Fetch IP info with caching and exponential backoff, multiple services"""
+    """Fetch IP info with caching and exponential backoff"""
     global ip_cache
 
-    # Check cache validity
-    current_time = time.time()
-    if ip_cache['data'] and (current_time - ip_cache['timestamp']) < CACHE_DURATION:
+    # Simplified cache check
+    if ip_cache['data'] and time.time() - ip_cache['timestamp'] < CACHE_DURATION:
         return ip_cache['data']
 
-    # Fallback IP services in order of preference
     services = [
         'https://ipinfo.io/json',
         'http://ip-api.com/json/?fields=query,country,regionName,city',
@@ -216,80 +262,21 @@ def fetch_ip_info_with_retry():
         'https://httpbin.org/ip'
     ]
 
-    timeout = 5
-    backoff_factor = 2
-
     for service_url in services:
-        max_retries = 2  # Less retries per service since we have fallbacks
-
-        for attempt in range(max_retries):
+        for attempt in range(2):
             try:
-                response = requests.get(service_url, timeout=timeout)
+                response = requests.get(service_url, timeout=5)
                 if response.status_code == 200:
-                    data = response.json()
-
-                    # Normalize different API response formats
-                    if 'ipinfo.io' in service_url:
-                        ip_info = {
-                            'ip': data.get('ip'),
-                            'country': data.get('country'),
-                            'region': data.get('region'),
-                            'city': data.get('city')
-                        }
-                    elif 'ip-api.com' in service_url:
-                        ip_info = {
-                            'ip': data.get('query'),
-                            'country': data.get('country'),
-                            'region': data.get('regionName'),
-                            'city': data.get('city')
-                        }
-                    elif 'api.ipify.org' in service_url:
-                        ip_info = {
-                            'ip': data.get('ip'),
-                            'country': 'Unknown',
-                            'region': 'Unknown',
-                            'city': 'Unknown'
-                        }
-                    elif 'httpbin.org' in service_url:
-                        ip_info = {
-                            'ip': data.get('origin', '').split(',')[0].strip(),  # Handle multiple IPs
-                            'country': 'Unknown',
-                            'region': 'Unknown',
-                            'city': 'Unknown'
-                        }
-
-                    # Cache successful result
-                    ip_cache['data'] = ip_info
-                    ip_cache['timestamp'] = current_time
-                    return ip_info
-
+                    ip_cache['data'] = _normalize_ip_response(service_url, response.json())
+                    ip_cache['timestamp'] = time.time()
+                    return ip_cache['data']
                 elif response.status_code == 429:
-                    # Rate limited - wait and try next service
-                    wait_time = backoff_factor ** attempt
-                    logging.warning(f"Rate limited (429) for {service_url}. Waiting {wait_time} seconds before next attempt")
-                    time.sleep(wait_time)
-
-                    # If this was the last attempt for this service, continue to next service
-                    if attempt == max_retries - 1:
-                        break
-                    else:
-                        continue
-                else:
-                    # Other HTTP error - try next service immediately
-                    break
-
-            except requests.exceptions.RequestException as e:
-                wait_time = backoff_factor ** attempt
-                logging.warning(f"Request failed for {service_url}: {e}. Waiting {wait_time} seconds")
-                time.sleep(wait_time)
-
-                if attempt == max_retries - 1:
-                    break
-                else:
+                    time.sleep(2 ** attempt)
                     continue
+            except requests.exceptions.RequestException:
+                time.sleep(2 ** attempt)
 
-    # All services failed - return basic local info
-    logging.warning("All IP services failed, falling back to local interface info")
+    logging.warning("All IP services failed, using local fallback")
     return get_basic_local_ip_info()
 
 def get_basic_local_ip_info():
@@ -409,24 +396,8 @@ def get_hardware_info():
             if generation_match:
                 generation = generation_match.group(1) + 'th Gen'
 
-            # Clean up name by removing extra trademarks and symbols
-            cpu_name = re.sub(r'[®™©®®™®©®™©®®™®©®™©]', '', cpu_name)  # Remove registered, trademark, copyright symbols
-            cpu_name = re.sub(r'\(R\)', '', cpu_name, flags=re.IGNORECASE)  # Remove (R)
-            cpu_name = re.sub(r'\(TM\)', '', cpu_name, flags=re.IGNORECASE)  # Remove (TM)
-
-            # Clean CPU name by removing generation prefix
-            cleaned_name = clean_cpu_name(cpu_name.strip())
-
-            # Format the CPU name
-            formatted_name = format_cpu_name(cleaned_name)
-
-            # Get codename
             manufacturer = processor.Manufacturer or 'Intel'
-            codename = 'Unknown'
-            if 'Intel' in manufacturer.upper() and generation:
-                codename = get_intel_codename(generation, formatted_name)
-            elif 'AMD' in manufacturer.upper() and generation:
-                codename = get_amd_codename(generation, formatted_name)
+            formatted_name, codename = process_cpu_name(cpu_name.strip(), generation, manufacturer)
 
             hardware_info['processor'] = {
                 'name': formatted_name,
@@ -496,8 +467,20 @@ def health_check():
 @app.route('/api/system-info', methods=['GET'])
 def system_info():
     """Consolidated endpoint for system information"""
+    # Get hardware info for CPU core detection
+    hardware_data = get_hardware_info()
+
+    # Get CPU info
+    cpu_info = get_cpu_info()
+    if cpu_info:
+        # Detect core types using hardware info
+        physical_cores = cpu_info.get('cpu_count_physical', 0)
+        logical_processors = cpu_info.get('cpu_count_logical', 0)
+        core_types = detect_core_types(physical_cores, logical_processors, hardware_data)
+        cpu_info['core_types'] = core_types
+
     data = {
-        'cpu': get_cpu_info(),
+        'cpu': cpu_info,
         'memory': get_memory_info(),
         'disk': get_disk_info(),
         'network': get_network_info(),
