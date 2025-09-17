@@ -1,4 +1,4 @@
-# System Monitor Dashboard
+# System Monitor Dashboard (Incomplete)
 
 A real-time web application that monitors and displays your computer's system information, featuring live updates and visual data representations.
 
