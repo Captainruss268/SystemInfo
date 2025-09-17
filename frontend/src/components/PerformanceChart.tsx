@@ -100,11 +100,7 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ data }) => {
     },
     plugins: {
       title: {
-        display: true,
-        text: 'System Performance Over Time',
-        font: {
-          size: 20,
-        },
+        display: false,
       },
       legend: {
         position: 'top' as const,
@@ -160,7 +156,8 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ data }) => {
   }
 
   return (
-    <div className="performance-chart">
+    <div className="performance-chart card">
+      <h2>System Performance Over Time</h2>
       <Line data={chartData} options={options} />
     </div>
   );

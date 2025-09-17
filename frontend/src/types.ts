@@ -99,10 +99,20 @@ export interface MotherboardInfo {
   serial_number: string;
 }
 
+export interface WifiAdapterInfo {
+  name: string;
+  manufacturer: string;
+  device_id: string;
+  mac_address: string | null;
+  speed: number | null;
+  status: string;
+}
+
 export interface HardwareInfo {
   gpu: GpuInfo[];
   motherboard: MotherboardInfo;
   processor: ProcessorInfo;
+  wifi_adapters: WifiAdapterInfo[];
 }
 
 export type ThemeMode = 'light' | 'dark';

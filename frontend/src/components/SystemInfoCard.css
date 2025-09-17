@@ -171,3 +171,108 @@
   margin: 0.5rem 0;
   font-weight: 500;
 }
+
+.cpu-temperature-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--card-background);
+  border: 1px solid var(--border-color);
+  padding: 1rem;
+  border-radius: 5px;
+  border-left: 3px solid var(--accent-color);
+}
+
+.cpu-temperature-item h3 {
+  color: var(--primary-text-color);
+  margin-top: 0;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.cpu-temperature-chart {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.cpu-temp-placeholder {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Light mode enhancements for CPU temperature item */
+[data-theme="light"] .cpu-temperature-item {
+  background-color: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.disk-info-section {
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-color);
+}
+
+.disk-info-section h3 {
+  color: var(--primary-text-color);
+  margin-bottom: 1rem;
+}
+
+.disk-info {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.disk-item {
+  background-color: var(--hover-color);
+  padding: 1rem;
+  border-radius: 5px;
+  border-left: 3px solid #ff6b6b;
+}
+
+.disk-item h4 {
+  color: #ff6b6b;
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+}
+
+.disk-details {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 1rem;
+  align-items: center;
+}
+
+.disk-text {
+  flex: 1;
+}
+
+.disk-text p {
+  font-size: 0.9rem;
+  color: var(--secondary-text-color);
+  margin: 0.25rem 0;
+}
+
+.disk-usage-chart {
+  justify-self: center;
+}
+
+.disk-usage-chart svg {
+  width: 80px;
+  height: 80px;
+}
+
+/* Light mode enhancements for disk info */
+[data-theme="light"] .disk-info-section {
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="light"] .disk-item {
+  background-color: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}

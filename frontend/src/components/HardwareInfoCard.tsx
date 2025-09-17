@@ -11,7 +11,7 @@ const HardwareInfoCard: React.FC<HardwareInfoCardProps> = ({ data }) => {
     return <div className="card hardware-info-card"><h2>Hardware Information</h2><p>No data available.</p></div>;
   }
 
-  const { gpu, motherboard, processor } = data;
+  const { gpu, motherboard, processor, wifi_adapters } = data;
 
   return (
     <div className="card hardware-info-card">
@@ -61,6 +61,22 @@ const HardwareInfoCard: React.FC<HardwareInfoCardProps> = ({ data }) => {
           </ul>
         ) : (
           <p>N/A</p>
+        )}
+      </div>
+      <div className="hardware-section">
+        <h3>WiFi Adapters</h3>
+        {wifi_adapters && wifi_adapters.length > 0 ? (
+          <ul>
+            {wifi_adapters.map((adapter, index) => (
+              <li key={index}>
+                <strong>{adapter.name}</strong>{adapter.manufacturer && <span> by {adapter.manufacturer}</span>}
+                {adapter.mac_address && <span><br />MAC: {adapter.mac_address}</span>}
+                {adapter.speed && adapter.speed > 0 && <span><br />({adapter.speed} Mbps)</span>}
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p>No wireless adapters detected</p>
         )}
       </div>
     </div>

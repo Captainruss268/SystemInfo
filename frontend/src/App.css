@@ -111,10 +111,35 @@ body {
   padding: 1.5rem;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   width: 100%;
+  transition: all 0.3s ease;
 }
 
 .performance-chart-container:hover {
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-5px);
+  box-shadow: 0 0 15px var(--accent-color);
+  border-color: var(--accent-color);
+}
+
+/* Light mode enhancements */
+[data-theme="light"] .performance-chart-container {
+  background-color: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.08);
+}
+
+.performance-chart.card h2 {
+  font-family: 'Orbitron', sans-serif;
+  color: var(--accent-color);
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 10px;
+}
+
+/* Light mode for chart card title */
+[data-theme="light"] .performance-chart.card h2 {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 .performance-chart {
