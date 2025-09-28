@@ -105,14 +105,44 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
+.ip-item {
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
+  font-size: 0.9rem;
+  padding: 0.75rem;
+  border-radius: 4px;
+  background-color: #222;
+  align-items: flex-start;
+  margin-bottom: 0.5rem;
+}
+
+/* Light mode for IP cards */
+[data-theme="light"] .ip-item {
+  background-color: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
 .location-label {
-  color: var(--primary-text-color);
+  color: var(--accent-color);
   font-weight: 600;
   margin-bottom: 0.25rem;
 }
 
 .location-value {
-  color: #00ffff;
+  color: #ffffff;
+  font-size: 0.95rem;
+}
+
+.ip-label {
+  color: var(--accent-color);
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.ip-value {
+  color: #ffffff;
   font-size: 0.95rem;
 }
 
@@ -147,13 +177,13 @@
 }
 
 .stat-label, .connection-address {
-  color: var(--primary-text-color);
+  color: var(--accent-color);
   font-weight: 600;
   margin-bottom: 0.25rem;
 }
 
 .stat-value, .connection-status {
-  color: #00ffff;
+  color: #ffffff;
   font-size: 0.95rem;
 }
 

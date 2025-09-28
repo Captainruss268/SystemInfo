@@ -33,23 +33,13 @@ const NetworkInfoCard = ({ data }) => {
       <h2>Network Information</h2>
 
       <div className="network-section">
-        <h3>IP & Location</h3>
+        <h3>Location</h3>
         {networkData.ip_info ? (
-          <div className="ip-info">
+          <div className="location-info">
             {networkData.ip_info.error ? (
               <p>{networkData.ip_info.error}</p>
             ) : (
               <div className="location-details">
-                <div className="location-item">
-                  <span className="location-label">IPv4 Address:</span>
-                  <span className="location-value">{networkData.ip_info.ip}</span>
-                </div>
-                {networkData.local_ipv6 && (
-                  <div className="location-item">
-                    <span className="location-label">IPv6 Address:</span>
-                    <span className="location-value">{networkData.local_ipv6}</span>
-                  </div>
-                )}
                 {networkData.ip_info.city && (
                   <div className="location-item">
                     <span className="location-label">City:</span>
@@ -72,9 +62,34 @@ const NetworkInfoCard = ({ data }) => {
             )}
           </div>
         ) : (
+          <p>No location information available</p>
+        )}
+      </div>
+
+      <div className="network-section">
+        <h3>IP Address</h3>
+        {networkData.ip_info ? (
+          <div className="ip-info">
+            {networkData.ip_info.error ? (
+              <p>{networkData.ip_info.error}</p>
+            ) : (
+              <div className="ip-details">
+                <div className="ip-item">
+                  <span className="ip-label">IPv4 Address:</span>
+                  <span className="ip-value">{networkData.ip_info.ip}</span>
+                </div>
+                {networkData.local_ipv6 && (
+                  <div className="ip-item">
+                    <span className="ip-label">IPv6 Address:</span>
+                    <span className="ip-value">{networkData.local_ipv6}</span>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        ) : (
           <p>No IP information available</p>
         )}
-
       </div>
 
         <div className="network-section">
