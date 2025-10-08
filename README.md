@@ -1,4 +1,4 @@
-# System Monitor Dashboard (Incomplete)
+# System Monitor Dashboard (Work in Progress)
 
 A real-time web application that monitors and displays your computer's system information, featuring live updates and visual data representations.
 
@@ -70,4 +70,4 @@ The application will be available at `http://localhost:3000`
 
 ## Project Status
 
-✅ **Complete** - This full-stack system monitoring application is ready to use with real-time data visualization, comprehensive error handling, and professional UI design.
+🚧 **Work in Progress** - This full-stack system monitoring application has core functionality complete, with real-time data visualization and interactive charts. Ongoing improvements include enhancing the user interface and adding advanced features for better performance tracking.
