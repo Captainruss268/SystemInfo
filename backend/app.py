@@ -281,7 +281,7 @@ class TemperatureDetector:
                 logger.warning("psutil.sensors_temperatures not available")
                 return []
 
-            temps = psutil.sensors_temperatures()
+            temps = psutil.sensors_temperatures()  # type: ignore
             if not temps:
                 logger.warning("No temperature sensors found by psutil")
                 return []
@@ -684,7 +684,7 @@ def process_cpu_name(name, generation=None, manufacturer='Intel'):
             '12': 'Broadwell', '11': 'Haswell', '10': 'Ivy Bridge',
             '9': 'Sandy Bridge', '7': 'Nehalem', '6': 'Core', '4': 'NetBurst'
         }
-        codename = intel_codenames.get(gen_num, f'Gen {gen_num}' if gen_num else 'Unknown')
+        codename = intel_codenames.get(gen_num, f'Gen {gen_num}' if gen_num else 'Unknown') if gen_num else 'Unknown'  # type: ignore
 
         # Add mobile suffix for laptop CPUs
         if any(term in cleaned.lower() for term in ['laptop', 'mobile', ' m ']):
@@ -822,7 +822,7 @@ class NetworkUtils:
     def get_network_info() -> Optional[Dict[str, Any]]:
         """Get detailed network information"""
         try:
-            net_io = psutil.net_io_counters()
+            net_io = psutil.net_io_counters(pernic=False)  # type: ignore
             ip_info = NetworkUtils.fetch_ip_info_with_retry()
             local_ipv6 = None
 
@@ -1177,7 +1177,7 @@ def reset_io():
     """Reset I/O counters"""
     global io_offsets
     try:
-        current_io = psutil.net_io_counters()
+        current_io = psutil.net_io_counters(pernic=False)  # type: ignore
         io_offsets['bytes_sent'] = current_io.bytes_sent
         io_offsets['bytes_recv'] = current_io.bytes_recv
         io_offsets['packets_sent'] = current_io.packets_sent

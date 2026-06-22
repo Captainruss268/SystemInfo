@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -13,7 +13,6 @@ import {
 import { Line } from 'react-chartjs-2';
 import { HistoricalDataPoint } from '../types';
 
-// Register Chart.js components
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -29,8 +28,7 @@ interface PerformanceChartProps {
 }
 
 const PerformanceChart: React.FC<PerformanceChartProps> = ({ data }) => {
-  // Prepare chart data
-  const chartData = useMemo(() => {
+  const networkChartData = useMemo(() => {
     const labels = data.map(point =>
       new Date(point.timestamp).toLocaleTimeString([], {
         hour: '2-digit',
@@ -39,64 +37,48 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ data }) => {
       })
     );
 
-    // Get CPU data (use average of all cores)
-    const cpuData = data.map(point => {
-      if (point.cpu_percent.length === 0) return 0;
-      const avg = point.cpu_percent.reduce((a, b) => a + b, 0) / point.cpu_percent.length;
-      return Math.round(avg * 100) / 100;
-    });
-
-    // Memory data
-    const memoryData = data.map(point => Math.round(point.memory_percent * 100) / 100);
-
-    // Network data (convert to MB/s)
     const networkData = data.map((point, index) => {
       if (index === 0) return 0;
 
       const prev = data[index - 1];
-      const timeDiff = (point.timestamp - prev.timestamp) / 1000; // seconds
-      const bytesPerSecond = (point.network_bytes_sent - prev.network_bytes_sent) / timeDiff;
-      return Math.round(bytesPerSecond / (1024 * 1024) * 100) / 100; // MB/s
+      const timeDiff = (point.timestamp - prev.timestamp) / 1000;
+      if (timeDiff <= 0) return 0;
+      const bytesSent = Math.max(0, point.network_bytes_sent - prev.network_bytes_sent);
+      const bytesRecv = Math.max(0, point.network_bytes_recv - prev.network_bytes_recv);
+      const bytesPerSecond = (bytesSent + bytesRecv) / timeDiff;
+      return Math.round(bytesPerSecond / (1024 * 1024) * 100) / 100;
     });
 
     return {
       labels,
       datasets: [
         {
-          label: 'CPU Usage (%)',
-          data: cpuData,
-          borderColor: '#00ffff',
-          backgroundColor: 'rgba(0, 255, 255, 0.1)',
-          tension: 0.4,
-          fill: true,
-        },
-        {
-          label: 'Memory Usage (%)',
-          data: memoryData,
-          borderColor: '#ff6b6b',
-          backgroundColor: 'rgba(255, 107, 107, 0.1)',
-          tension: 0.4,
-          fill: true,
-        },
-        {
           label: 'Network (MB/s)',
           data: networkData,
           borderColor: '#4ecdc4',
           backgroundColor: 'rgba(78, 205, 196, 0.1)',
-          yAxisID: 'y1',
           tension: 0.4,
-          fill: false,
+          fill: true,
         },
       ],
     };
   }, [data]);
 
-  // Chart options
-  const options: ChartOptions<'line'> = {
+  const networkOptions: ChartOptions<'line'> = {
     responsive: true,
+    maintainAspectRatio: false,
+    clip: { left: 5, top: 5, right: 5, bottom: 5 },
     interaction: {
       mode: 'index' as const,
       intersect: false,
+    },
+    layout: {
+      padding: {
+        left: 5,
+        right: 15,
+        top: 5,
+        bottom: 5,
+      },
     },
     plugins: {
       title: {
@@ -104,14 +86,18 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ data }) => {
       },
       legend: {
         position: 'top' as const,
+        labels: {
+          boxWidth: 12,
+          padding: 10,
+          font: { size: 11 },
+        },
       },
       tooltip: {
         mode: 'index' as const,
         intersect: false,
         callbacks: {
-          title: (tooltipItems) => {
-            return `Time: ${tooltipItems[0].label}`;
-          },
+          title: (tooltipItems) => `Time: ${tooltipItems[0].label}`,
+          label: (tooltipItem) => `${tooltipItem.dataset.label}: ${tooltipItem.parsed.y} MB/s`,
         },
       },
     },
@@ -122,26 +108,27 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ data }) => {
           display: true,
           text: 'Time',
         },
+        ticks: {
+          maxTicksLimit: 8,
+          font: { size: 10 },
+          autoSkipPadding: 10,
+          maxRotation: 30,
+        },
+        grid: {
+          display: true,
+        },
       },
       y: {
         type: 'linear' as const,
         display: true,
         position: 'left' as const,
+        min: 0,
         title: {
           display: true,
-          text: 'Usage (%)',
+          text: 'Speed (MB/s)',
         },
-      },
-      y1: {
-        type: 'linear' as const,
-        display: true,
-        position: 'right' as const,
-        title: {
-          display: true,
-          text: 'Network (MB/s)',
-        },
-        grid: {
-          drawOnChartArea: false,
+        ticks: {
+          font: { size: 10 },
         },
       },
     },
@@ -157,8 +144,8 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ data }) => {
 
   return (
     <div className="performance-chart card">
-      <h2>System Performance Over Time</h2>
-      <Line data={chartData} options={options} />
+      <h2>Network Speed Over Time</h2>
+      <Line data={networkChartData} options={networkOptions} />
     </div>
   );
 };

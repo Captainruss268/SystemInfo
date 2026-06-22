@@ -18,6 +18,9 @@ const SystemInfoCard = ({ data, hardwareData }) => {
   const cores = hardwareData.processor?.cores || cpu.cpu_count_physical;
   const logicalProcessors = hardwareData.processor?.logical_processors || cpu.cpu_count_logical;
   const coreTypes = cpu.core_types || { p_cores: 0, e_cores: cores, total_cores: cores };
+  const avgCpuUsage = cpu.cpu_percent && cpu.cpu_percent.length > 0
+    ? (cpu.cpu_percent.reduce((a, b) => a + b, 0) / cpu.cpu_percent.length).toFixed(1)
+    : '0.0';
 
   return (
     <div className="card system-info-card">
@@ -103,6 +106,24 @@ const SystemInfoCard = ({ data, hardwareData }) => {
                 </svg>
               </div>
             )}
+          </div>
+        </div>
+
+        <div className="info-item cpu-usage-summary-item">
+          <h3>CPU Usage</h3>
+          <div className="cpu-usage-chart">
+            <svg width="120" height="120" viewBox="0 0 120 120">
+              <circle cx="60" cy="60" r="50" stroke="#ddd" strokeWidth="6" fill="none" />
+              <circle
+                cx="60" cy="60" r="50" stroke="#4ecdc4" strokeWidth="6" fill="none"
+                strokeDasharray={`${2 * Math.PI * 50}`}
+                strokeDashoffset={`${2 * Math.PI * 50 * (1 - parseFloat(avgCpuUsage) / 100)}`}
+                transform="rotate(-90 60 60)"
+              />
+              <text x="60" y="65" textAnchor="middle" fontSize="20" fill="#fff" fontWeight="bold">
+                {avgCpuUsage}%
+              </text>
+            </svg>
           </div>
         </div>
 

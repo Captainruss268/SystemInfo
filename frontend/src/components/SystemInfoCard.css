@@ -172,6 +172,38 @@
   font-weight: 500;
 }
 
+.cpu-usage-summary-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--card-background);
+  border: 1px solid var(--border-color);
+  padding: 1rem;
+  border-radius: 5px;
+  border-left: 3px solid var(--accent-color);
+}
+
+.cpu-usage-summary-item h3 {
+  color: var(--primary-text-color);
+  margin-top: 0;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.cpu-usage-chart {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Light mode enhancements for CPU usage summary item */
+[data-theme="light"] .cpu-usage-summary-item {
+  background-color: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
 .cpu-temperature-item {
   display: flex;
   flex-direction: column;

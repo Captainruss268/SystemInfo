@@ -1,0 +1,9 @@
+{
+  "python.pythonPath": "${workspaceFolder}\\.venv\\Scripts\\python.exe",
+  "python.analysis.typeCheckingMode": "basic",
+  "python.analysis.autoSearchPaths": true,
+  "python.analysis.extraPaths": [
+    "${workspaceFolder}\\backend"
+  ],
+  "python.linting.enabled": false
+}
