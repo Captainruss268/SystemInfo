@@ -18,18 +18,21 @@ echo [OK] Python found
 
 REM Check/Install Node.js
 where node >nul 2>&1
-if %errorlevel% neq 0 (
-    echo [INFO] Node.js not found. Installing via winget...
-    winget install OpenJS.NodeJS.LTS --accept-source-agreements --accept-package-agreements >nul 2>&1
-    if %errorlevel% neq 0 (
-        echo [ERROR] Failed to install Node.js. Install manually from https://nodejs.org
-        pause
-        exit /b 1
-    )
-    echo [OK] Node.js installed
-) else (
-    echo [OK] Node.js found
+if %errorlevel% equ 0 goto :node_found
+if exist "C:\Program Files\nodejs\node.exe" (
+    echo [OK] Node.js found at C:\Program Files\nodejs\
+    set "PATH=C:\Program Files\nodejs;%PATH%"
+    goto :node_found
 )
+echo [INFO] Node.js not found. Installing via winget...
+winget install OpenJS.NodeJS.LTS --accept-source-agreements --accept-package-agreements >nul 2>&1
+if %errorlevel% neq 0 (
+    echo [ERROR] Failed to install Node.js. Install manually from https://nodejs.org
+    pause
+    exit /b 1
+)
+echo [OK] Node.js installed
+:node_found
 
 REM Ensure node is on PATH for this session
 set "PATH=C:\Program Files\nodejs;%PATH%"
