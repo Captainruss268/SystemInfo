@@ -73,7 +73,6 @@ echo   Backend:  http://127.0.0.1:5000
 echo   Frontend: http://localhost:3000
 echo ========================================
 echo.
-start http://localhost:3000
 echo Press any key to close this window (servers will keep running)...
 pause >nul
 exit

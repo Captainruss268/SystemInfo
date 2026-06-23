@@ -1,4 +1,3 @@
-import React from 'react';
 import './HardwareInfoCard.css';
 import { HardwareInfo } from '../types';
 

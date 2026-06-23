@@ -1102,6 +1102,11 @@ def get_nvidia_gpu_memory() -> Optional[Dict[str, int]]:
 
     try:
         pynvml.nvmlInit()
+    except Exception:
+        # NVML library not available (no NVIDIA GPU or driver not installed)
+        return None
+
+    try:
         device_count = pynvml.nvmlDeviceGetCount()
 
         gpu_memory_info = {}
@@ -1121,7 +1126,11 @@ def get_nvidia_gpu_memory() -> Optional[Dict[str, int]]:
         pynvml.nvmlShutdown()
         return gpu_memory_info
     except Exception as e:
-        logger.error(f"Error getting NVIDIA GPU memory: {e}")
+        logger.warning(f"Error getting NVIDIA GPU memory: {e}")
+        try:
+            pynvml.nvmlShutdown()
+        except Exception:
+            pass
         return None
 
 

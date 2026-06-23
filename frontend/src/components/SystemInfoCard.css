@@ -23,8 +23,9 @@
 
 .info-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 1.25rem;
+  justify-content: center;
 }
 
 
@@ -94,16 +95,19 @@
 .progress-bar {
   background-color: var(--accent-color);
   height: 100%;
-  color: var(--card-background);
+  color: white;
+  font-weight: 700;
   text-align: center;
   line-height: 20px;
   font-size: 0.8rem;
   transition: width 0.5s ease-in-out;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
 }
 
-/* Light mode progress bar text color */
+/* Light mode core usage text */
 [data-theme="light"] .progress-bar {
-  color: white;
+  color: #2d2d2d;
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.6);
 }
 
 .memory-item {
@@ -125,6 +129,15 @@
   font-size: 1rem;
   margin: 0.5rem 0;
   line-height: 1.4;
+}
+
+.chart-text {
+  fill: #fff;
+}
+
+/* Light mode chart text */
+[data-theme="light"] .chart-text {
+  fill: #2d2d2d;
 }
 
 .circle-chart {
@@ -155,6 +168,15 @@
 .efficiency-core span {
   color: #4ecdc4;
   font-weight: 600;
+}
+
+/* Light mode core type colors */
+[data-theme="light"] .performance-core span {
+  color: #e85a2a;
+}
+
+[data-theme="light"] .efficiency-core span {
+  color: #3ab5ad;
 }
 
 /* Core information display */

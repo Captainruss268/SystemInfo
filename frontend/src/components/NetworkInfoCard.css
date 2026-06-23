@@ -135,6 +135,11 @@
   font-size: 0.95rem;
 }
 
+/* Light mode text */
+[data-theme="light"] .location-value {
+  color: #2d2d2d;
+}
+
 .ip-label {
   color: var(--accent-color);
   font-weight: 600;
@@ -144,6 +149,11 @@
 .ip-value {
   color: #ffffff;
   font-size: 0.95rem;
+}
+
+/* Light mode text */
+[data-theme="light"] .ip-value {
+  color: #2d2d2d;
 }
 
 .io-header {
@@ -185,6 +195,12 @@
 .stat-value, .connection-status {
   color: #ffffff;
   font-size: 0.95rem;
+}
+
+/* Light mode text */
+[data-theme="light"] .stat-value,
+[data-theme="light"] .connection-status {
+  color: #2d2d2d;
 }
 
 .reset-button {

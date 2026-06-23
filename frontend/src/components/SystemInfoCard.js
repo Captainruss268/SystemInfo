@@ -1,4 +1,3 @@
-import React from 'react';
 import './SystemInfoCard.css';
 
 const SystemInfoCard = ({ data, hardwareData }) => {
@@ -62,7 +61,7 @@ const SystemInfoCard = ({ data, hardwareData }) => {
                   strokeDasharray={`${2 * Math.PI * 50}`} strokeDashoffset={`${2 * Math.PI * 50 * (1 - memory.percent / 100)}`}
                   transform="rotate(-90 60 60)"
                 />
-                <text x="60" y="65" textAnchor="middle" fontSize="20" fill="#fff" fontWeight="bold">
+                <text x="60" y="65" textAnchor="middle" fontSize="20" className="chart-text" fontWeight="bold">
                   {memory.percent.toFixed(1)}%
                 </text>
               </svg>
@@ -90,7 +89,7 @@ const SystemInfoCard = ({ data, hardwareData }) => {
                       strokeDashoffset={`${circumference - strokeLength}`}
                       transform="rotate(-90 60 60)"
                     />
-                    <text x="60" y="65" textAnchor="middle" fontSize="20" fill="#fff" fontWeight="bold">
+                    <text x="60" y="65" textAnchor="middle" fontSize="20" className="chart-text" fontWeight="bold">
                       {temp.toFixed(0)}°C
                     </text>
                   </svg>
@@ -100,7 +99,7 @@ const SystemInfoCard = ({ data, hardwareData }) => {
               <div className="cpu-temp-placeholder">
                 <svg width="120" height="120" viewBox="0 0 120 120">
                   <circle cx="60" cy="60" r="50" stroke="#ddd" strokeWidth="6" fill="none" />
-                  <text x="60" y="65" textAnchor="middle" fontSize="20" fill="#fff" fontWeight="bold">
+                  <text x="60" y="65" textAnchor="middle" fontSize="20" className="chart-text" fontWeight="bold">
                     No Data
                   </text>
                 </svg>
@@ -120,7 +119,7 @@ const SystemInfoCard = ({ data, hardwareData }) => {
                 strokeDashoffset={`${2 * Math.PI * 50 * (1 - parseFloat(avgCpuUsage) / 100)}`}
                 transform="rotate(-90 60 60)"
               />
-              <text x="60" y="65" textAnchor="middle" fontSize="20" fill="#fff" fontWeight="bold">
+              <text x="60" y="65" textAnchor="middle" fontSize="20" className="chart-text" fontWeight="bold">
                 {avgCpuUsage}%
               </text>
             </svg>
@@ -205,7 +204,7 @@ const SystemInfoCard = ({ data, hardwareData }) => {
                           strokeDasharray={`${2 * Math.PI * 50}`} strokeDashoffset={`${2 * Math.PI * 50 * (1 - diskItem.percent / 100)}`}
                           transform="rotate(-90 60 60)"
                         />
-                        <text x="60" y="65" textAnchor="middle" fontSize="18" fill="#fff" fontWeight="bold">
+                        <text x="60" y="65" textAnchor="middle" fontSize="18" className="chart-text" fontWeight="bold">
                           {diskItem.percent.toFixed(1)}%
                         </text>
                       </svg>
