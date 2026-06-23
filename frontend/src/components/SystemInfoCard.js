@@ -139,46 +139,19 @@ const SystemInfoCard = ({ data, hardwareData }) => {
             </div>
           ) : null}
           <div className="cpu-cores">
-            {cpu.cpu_percent.map((core, index) => {
-              let label = 'Core';
-              let coreNum = index + 1;
-              let coreType = '';
-
-              // Determine if this is a P-core or E-core
-              if (coreTypes.p_cores > 0 && coreTypes.e_cores > 0) {
-                // Hybrid CPU with both types (Intel/AMD Ryzen/Qualcomm)
-                if (index < coreTypes.p_cores) {
-                  coreType = 'P';
-                  coreNum = index + 1;
-                } else {
-                  coreType = 'E';
-                  coreNum = index - coreTypes.p_cores + 1;
-                }
-                label = `${coreType}-Core`;
-              } else if (coreTypes.p_cores === cores && coreTypes.e_cores === 0) {
-                // Apple Silicon or other unified-performance CPUs
-                label = `P-Core`;
-                coreNum = index + 1;
-                coreType = 'P';
-              } else {
-                // Standard CPUs without hybrid architecture
-                label = 'Core';
-              }
-
-              return (
-                <div key={index} className={`cpu-core ${coreType === 'P' ? 'performance-core' : coreType === 'E' ? 'efficiency-core' : ''} ${core < 5 ? 'idle-core' : ''}`}>
-                  <span>{label} {coreNum}</span>
-                  <div className="progress-bar-container">
-                    <div
-                      className="progress-bar"
-                      style={{ width: `${core}%` }}
-                    >
-                      {core.toFixed(1)}%
-                    </div>
+            {cpu.cpu_percent.map((core, index) => (
+              <div key={index} className={`cpu-core ${core < 5 ? 'idle-core' : ''}`}>
+                <span>CPU {index + 1}</span>
+                <div className="progress-bar-container">
+                  <div
+                    className="progress-bar"
+                    style={{ width: `${core}%` }}
+                  >
+                    {core.toFixed(1)}%
                   </div>
                 </div>
-              );
-            })}
+              </div>
+            ))}
           </div>
         </div>
       </div>

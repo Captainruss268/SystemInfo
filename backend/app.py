@@ -80,19 +80,25 @@ class CPUArchitectureDetector:
 
     @classmethod
     def detect_core_types(cls, physical_cores: int, logical_processors: int, hardware_info: Optional[Dict] = None) -> Dict[str, int]:
-        """Detect P-cores vs E-cores based on CPU architecture"""
+        """Detect P-cores vs E-cores using physical vs logical processor counts"""
         try:
             if physical_cores == logical_processors:
-                return cls._create_core_result(0, physical_cores, physical_cores)
+                return cls._create_core_result(physical_cores, 0, physical_cores)
 
-            if not hardware_info or 'processor' not in hardware_info:
-                return cls._calculate_fallback_cores(physical_cores, logical_processors)
+            if logical_processors == 2 * physical_cores:
+                return cls._create_core_result(physical_cores, 0, physical_cores)
 
-            processor_name = hardware_info['processor'].get('name', '').lower()
-            manufacturer = hardware_info['processor'].get('manufacturer', '').lower()
+            # Hybrid: P-cores have 2 threads each, E-cores have 1 thread each.
+            #   logical = 2*p + e
+            #   physical = p + e
+            #   -> p = logical - physical, e = 2*physical - logical
+            p_cores = logical_processors - physical_cores
+            e_cores = 2 * physical_cores - logical_processors
 
-            return cls._detect_by_manufacturer(processor_name, manufacturer, physical_cores, logical_processors)
+            if p_cores >= 0 and e_cores >= 0 and (p_cores + e_cores == physical_cores):
+                return cls._create_core_result(p_cores, e_cores, physical_cores)
 
+            return cls._create_core_result(physical_cores, 0, physical_cores)
         except Exception as e:
             logger.warning(f"Error in core type detection: {e}")
             return cls._create_fallback_result(physical_cores)
@@ -117,8 +123,8 @@ class CPUArchitectureDetector:
         if cls._is_qualcomm_cpu(manufacturer, processor_name):
             return cls._detect_qualcomm_cores(physical_cores)
 
-        # Fallback calculation
-        return cls._calculate_fallback_cores(physical_cores, logical_processors)
+        # Fallback: treat all as P-cores
+        return cls._create_core_result(physical_cores, 0, physical_cores)
 
     @classmethod
     def _is_intel_cpu(cls, processor_name: str, manufacturer: str) -> bool:
@@ -177,16 +183,6 @@ class CPUArchitectureDetector:
         p_cores, e_cores = qualcomm_patterns['snapdragon_x'](physical_cores)
         return cls._validate_and_create_result(p_cores, e_cores, physical_cores)
 
-    @classmethod
-    def _calculate_fallback_cores(cls, physical_cores: int, logical_processors: int) -> Dict[str, int]:
-        """Calculate core types using logical vs physical processor count"""
-        calc_p_cores = logical_processors - physical_cores
-        calc_e_cores = physical_cores - calc_p_cores
-
-        if calc_p_cores >= 0 and calc_e_cores >= 0 and (calc_p_cores + calc_e_cores == physical_cores):
-            return cls._create_core_result(calc_p_cores, calc_e_cores, physical_cores)
-
-        return cls._create_fallback_result(physical_cores)
 
     @classmethod
     def _validate_and_create_result(cls, p_cores: int, e_cores: int, physical_cores: int) -> Dict[str, int]:
