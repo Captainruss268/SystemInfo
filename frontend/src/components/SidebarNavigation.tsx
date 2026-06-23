@@ -8,9 +8,9 @@ const SidebarNavigation: React.FC = () => {
   const ticking = useRef(false);
 
   const sections = [
-    { id: 'network', label: 'Network', selector: '.network-info-card' },
     { id: 'system', label: 'System & CPU', selector: '.system-info-card' },
     { id: 'hardware', label: 'Hardware', selector: '.hardware-info-card' },
+    { id: 'network', label: 'Network', selector: '.network-info-card' },
     { id: 'performance', label: 'Performance', selector: '.performance-chart-container' },
   ];
 

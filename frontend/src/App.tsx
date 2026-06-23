@@ -17,7 +17,7 @@ const AppContent: React.FC = () => {
   const [systemInfo, setSystemInfo] = useState<SystemInfoData | null>(null);
   const [hardwareInfo, setHardwareInfo] = useState<HardwareInfo | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const { historicalData, addDataPoint, startTracking, clearData } = useHistoricalData();
+  const { historicalData, addDataPoint, startTracking, clearData, changeTimeWindow, timeWindow, maxPoints } = useHistoricalData();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -91,12 +91,18 @@ const AppContent: React.FC = () => {
         {systemInfo && hardwareInfo ? (
           <>
             <div className="info-cards">
-              <NetworkInfoCard data={systemInfo.network} />
               <SystemInfoCard data={systemInfo} hardwareData={hardwareInfo} />
               <HardwareInfoCard data={hardwareInfo} />
+              <NetworkInfoCard data={systemInfo.network} />
             </div>
             <div className="performance-chart-container">
-              <PerformanceChart data={historicalData} />
+              <PerformanceChart
+                data={historicalData}
+                timeWindow={timeWindow}
+                maxPoints={maxPoints}
+                onClearData={clearData}
+                onChangeTimeWindow={changeTimeWindow}
+              />
             </div>
           </>
         ) : (

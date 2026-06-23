@@ -1,12 +1,21 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { HistoricalDataPoint, SystemInfoData } from '../types';
 
-const MAX_DATA_POINTS = 60; // Keep 1 hour of data (5 sec intervals)
+const INTERVAL_MS = 5000;
 
 export const useHistoricalData = () => {
   const [historicalData, setHistoricalData] = useState<HistoricalDataPoint[]>([]);
+  const [timeWindow, setTimeWindow] = useState<number>(5); // minutes
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const lastDataRef = useRef<SystemInfoData | null>(null);
+
+  const clearData = useCallback(() => setHistoricalData([]), []);
+
+  const changeTimeWindow = useCallback((minutes: number) => {
+    setTimeWindow(minutes);
+    const maxPoints = Math.floor((minutes * 60 * 1000) / INTERVAL_MS);
+    setHistoricalData(prev => prev.slice(-maxPoints));
+  }, []);
 
   const addDataPoint = (data: SystemInfoData) => {
     const now = Date.now();
@@ -20,26 +29,29 @@ export const useHistoricalData = () => {
 
     setHistoricalData(prev => {
       const updated = [...prev, newPoint];
-
-      // Keep only the last MAX_DATA_POINTS
-      if (updated.length > MAX_DATA_POINTS) {
-        return updated.slice(-MAX_DATA_POINTS);
+      const maxPoints = Math.floor(timeWindowRef.current / (INTERVAL_MS / 1000));
+      if (updated.length > maxPoints) {
+        return updated.slice(-maxPoints);
       }
-
       return updated;
     });
 
     lastDataRef.current = data;
   };
 
+  // Use a ref so the addDataPoint closure always has the latest timeWindow
+  const timeWindowRef = useRef(timeWindow * 60 * 1000);
+  useEffect(() => { timeWindowRef.current = timeWindow * 60 * 1000; }, [timeWindow]);
+
+  const maxPoints = Math.floor((timeWindow * 60 * 1000) / INTERVAL_MS);
+
   const startTracking = () => {
     if (intervalRef.current) return;
-
     intervalRef.current = setInterval(() => {
       if (lastDataRef.current) {
         addDataPoint(lastDataRef.current);
       }
-    }, 5000); // Update every 5 seconds
+    }, INTERVAL_MS);
   };
 
   const stopTracking = () => {
@@ -59,9 +71,12 @@ export const useHistoricalData = () => {
 
   return {
     historicalData,
+    timeWindow,
+    maxPoints,
     addDataPoint,
     startTracking,
     stopTracking,
-    clearData: () => setHistoricalData([])
+    clearData,
+    changeTimeWindow,
   };
 };
