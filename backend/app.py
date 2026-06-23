@@ -1165,6 +1165,7 @@ def system_info():
             'system': platform.system(),
             'release': platform.release(),
             'version': platform.version(),
+            'windows_version': 'Windows 11' if int(platform.version().split('.')[-1]) >= 22000 else 'Windows 10',
             'architecture': platform.machine(),
             'processor': platform.processor()
         }

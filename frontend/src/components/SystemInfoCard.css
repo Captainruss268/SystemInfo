@@ -276,9 +276,14 @@
 }
 
 .disk-info {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  display: flex;
+  flex-wrap: wrap;
   gap: 1.5rem;
+}
+
+.disk-item {
+  flex: 1 1 280px;
+  min-width: 280px;
 }
 
 .disk-item {
@@ -295,14 +300,16 @@
 }
 
 .disk-details {
-  display: grid;
-  grid-template-columns: 1fr auto;
+  display: flex;
+  flex-wrap: wrap;
   gap: 1rem;
   align-items: center;
+  justify-content: space-between;
 }
 
 .disk-text {
-  flex: 1;
+  flex: 1 1 0;
+  min-width: 0;
 }
 
 .disk-text p {
@@ -316,8 +323,8 @@
 }
 
 .disk-usage-chart svg {
-  width: 80px;
-  height: 80px;
+  width: 120px;
+  height: 120px;
 }
 
 /* Light mode enhancements for disk info */

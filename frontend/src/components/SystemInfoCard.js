@@ -13,6 +13,7 @@ const SystemInfoCard = ({ data, hardwareData }) => {
   if (!data || !hardwareData) return null;
 
   const { platform, cpu, memory, disk } = data;
+  const osName = platform.windows_version || `${platform.system} ${platform.release}`;
   const processorName = hardwareData.processor?.name || platform.processor;
   const cores = hardwareData.processor?.cores || cpu.cpu_count_physical;
   const logicalProcessors = hardwareData.processor?.logical_processors || cpu.cpu_count_logical;
@@ -28,7 +29,7 @@ const SystemInfoCard = ({ data, hardwareData }) => {
       <div className="info-grid">
         <div className="info-item">
           <h3>OS</h3>
-          <p>{platform.system} {platform.release}</p>
+          <p>{osName}</p>
         </div>
         
         <div className="info-item">
@@ -180,43 +181,43 @@ const SystemInfoCard = ({ data, hardwareData }) => {
             })}
           </div>
         </div>
+      </div>
 
-        <div className="disk-info-section">
-          <h3>Storage Information</h3>
-          {disk && disk.length > 0 ? (
-            <div className="disk-info">
-              {disk.map((diskItem, index) => (
-                <div key={index} className="disk-item">
-                  <h4>Drive {diskItem.device.replace('/dev/', '').replace('\\', '')}</h4>
-                  <div className="disk-details">
-                    <div className="disk-text">
-                      <p>Mount Point: {diskItem.mountpoint}</p>
-                      <p>File System: {diskItem.fstype}</p>
-                      <p>Total: {formatBytes(diskItem.total)}</p>
-                      <p>Used: {formatBytes(diskItem.used)}</p>
-                      <p>Free: {formatBytes(diskItem.free)}</p>
-                    </div>
-                    <div className="disk-usage-chart">
-                      <svg width="120" height="120" viewBox="0 0 120 120">
-                        <circle cx="60" cy="60" r="50" stroke="#ddd" strokeWidth="8" fill="none" />
-                        <circle
-                          cx="60" cy="60" r="50" stroke="#ff6b6b" strokeWidth="8" fill="none"
-                          strokeDasharray={`${2 * Math.PI * 50}`} strokeDashoffset={`${2 * Math.PI * 50 * (1 - diskItem.percent / 100)}`}
-                          transform="rotate(-90 60 60)"
-                        />
-                        <text x="60" y="65" textAnchor="middle" fontSize="18" className="chart-text" fontWeight="bold">
-                          {diskItem.percent.toFixed(1)}%
-                        </text>
-                      </svg>
-                    </div>
+      <div className="disk-info-section">
+        <h3>Storage Information</h3>
+        {disk && disk.length > 0 ? (
+          <div className="disk-info">
+            {disk.map((diskItem, index) => (
+              <div key={index} className="disk-item">
+                <h4>Drive {diskItem.device.replace('/dev/', '').replace('\\', '')}</h4>
+                <div className="disk-details">
+                  <div className="disk-text">
+                    <p>Mount Point: {diskItem.mountpoint}</p>
+                    <p>File System: {diskItem.fstype}</p>
+                    <p>Total: {formatBytes(diskItem.total)}</p>
+                    <p>Used: {formatBytes(diskItem.used)}</p>
+                    <p>Free: {formatBytes(diskItem.free)}</p>
+                  </div>
+                  <div className="disk-usage-chart">
+                    <svg width="120" height="120" viewBox="0 0 120 120">
+                      <circle cx="60" cy="60" r="50" stroke="#ddd" strokeWidth="8" fill="none" />
+                      <circle
+                        cx="60" cy="60" r="50" stroke="#ff6b6b" strokeWidth="8" fill="none"
+                        strokeDasharray={`${2 * Math.PI * 50}`} strokeDashoffset={`${2 * Math.PI * 50 * (1 - diskItem.percent / 100)}`}
+                        transform="rotate(-90 60 60)"
+                      />
+                      <text x="60" y="65" textAnchor="middle" fontSize="18" className="chart-text" fontWeight="bold">
+                        {diskItem.percent.toFixed(1)}%
+                      </text>
+                    </svg>
                   </div>
                 </div>
-              ))}
-            </div>
-          ) : (
-            <p>No storage information available</p>
-          )}
-        </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p>No storage information available</p>
+        )}
       </div>
     </div>
   );
