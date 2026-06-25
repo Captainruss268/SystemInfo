@@ -30,7 +30,7 @@ A real-time web application that monitors and displays your computer's system in
 
 ### One-Click Setup (Windows)
 
-**Double-click `start.bat`** — that's it.
+**Double-click `start.bat`**.
 
 The script automatically:
 1. ✅ Checks for Python and Node.js (installs via winget if missing)
