@@ -1,3 +1,4 @@
+/* Light mode card mix-in via CSS variables - no redundant selectors needed */
 .system-info-card {
   width: 100%;
   background-color: var(--card-background);
@@ -29,20 +30,12 @@
   justify-content: center;
 }
 
-
 .info-item {
   background-color: var(--card-background);
   border: 1px solid var(--border-color);
   padding: 1rem;
   border-radius: 5px;
   border-left: 3px solid var(--accent-color);
-}
-
-/* Light mode enhancements for info-item */
-[data-theme="light"] .info-item {
-  background-color: rgba(255, 255, 255, 0.9);
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .info-item h3 {
@@ -88,11 +81,6 @@
   height: 20px;
 }
 
-/* Light mode progress bar improvements */
-[data-theme="light"] .progress-bar-container {
-  background-color: rgba(0, 0, 0, 0.1);
-}
-
 .progress-bar {
   background-color: var(--accent-color);
   height: 100%;
@@ -105,7 +93,6 @@
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
 }
 
-/* Light mode core usage text */
 [data-theme="light"] .progress-bar {
   color: #2d2d2d;
   text-shadow: 0 1px 2px rgba(255, 255, 255, 0.6);
@@ -136,7 +123,6 @@
   fill: #fff;
 }
 
-/* Light mode chart text */
 [data-theme="light"] .chart-text {
   fill: #2d2d2d;
 }
@@ -148,17 +134,18 @@
 .idle-core {
   opacity: 0.3;
 }
+
 .idle-core .progress-bar {
   background-color: var(--secondary-text-color);
 }
 
 /* Performance and Efficiency Core Styles */
 .performance-core .progress-bar {
-  background-color: #ff6b35; /* Orange/red for performance cores */
+  background-color: #ff6b35;
 }
 
 .efficiency-core .progress-bar {
-  background-color: #4ecdc4; /* Teal/cyan for efficiency cores */
+  background-color: #4ecdc4;
 }
 
 .performance-core span {
@@ -171,7 +158,6 @@
   font-weight: 600;
 }
 
-/* Light mode core type colors */
 [data-theme="light"] .performance-core span {
   color: #e85a2a;
 }
@@ -195,38 +181,7 @@
   font-weight: 500;
 }
 
-.cpu-usage-summary-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background-color: var(--card-background);
-  border: 1px solid var(--border-color);
-  padding: 1rem;
-  border-radius: 5px;
-  border-left: 3px solid var(--accent-color);
-}
-
-.cpu-usage-summary-item h3 {
-  color: var(--primary-text-color);
-  margin-top: 0;
-  margin-bottom: 1rem;
-  text-align: center;
-}
-
-.cpu-usage-chart {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-/* Light mode enhancements for CPU usage summary item */
-[data-theme="light"] .cpu-usage-summary-item {
-  background-color: rgba(255, 255, 255, 0.9);
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-}
-
+.cpu-usage-summary-item,
 .cpu-temperature-item {
   display: flex;
   flex-direction: column;
@@ -239,6 +194,7 @@
   border-left: 3px solid var(--accent-color);
 }
 
+.cpu-usage-summary-item h3,
 .cpu-temperature-item h3 {
   color: var(--primary-text-color);
   margin-top: 0;
@@ -246,6 +202,7 @@
   text-align: center;
 }
 
+.cpu-usage-chart,
 .cpu-temperature-chart {
   display: flex;
   justify-content: center;
@@ -256,13 +213,6 @@
   display: flex;
   justify-content: center;
   align-items: center;
-}
-
-/* Light mode enhancements for CPU temperature item */
-[data-theme="light"] .cpu-temperature-item {
-  background-color: rgba(255, 255, 255, 0.9);
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .disk-info-section {
@@ -285,9 +235,6 @@
 .disk-item {
   flex: 1 1 280px;
   min-width: 280px;
-}
-
-.disk-item {
   background-color: var(--hover-color);
   padding: 1rem;
   border-radius: 5px;
@@ -326,15 +273,4 @@
 .disk-usage-chart svg {
   width: 120px;
   height: 120px;
-}
-
-/* Light mode enhancements for disk info */
-[data-theme="light"] .disk-info-section {
-  border-top: 1px solid rgba(0, 0, 0, 0.1);
-}
-
-[data-theme="light"] .disk-item {
-  background-color: rgba(255, 255, 255, 0.9);
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }

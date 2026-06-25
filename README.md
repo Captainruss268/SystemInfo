@@ -5,9 +5,11 @@ A real-time web application that monitors and displays your computer's system in
 ## Features
 
 - **Real-time monitoring** of CPU, memory, disk, and network usage
-- **Interactive memory chart** with circular progress indicator
+- **Interactive memory chart** with circular progress indicators
 - **Hardware information** including processor details, GPU specs, and motherboard info
-- **Network statistics** showing interfaces and active connections
+- **Network statistics** showing interfaces, IP info, and I/O counters
+- **Dark/Light theme** toggle
+- **Sidebar navigation** with smooth scrolling to each section
 - **Modern interface** with responsive design and smooth animations
 
 ## Technology Stack
@@ -16,73 +18,47 @@ A real-time web application that monitors and displays your computer's system in
 - Python with Flask web framework
 - psutil for system monitoring
 - WMI for Windows hardware information
+- pynvml for NVIDIA GPU memory detection
 
 ### Frontend
-- React.js for user interface
-- Custom SVG charts
-- CSS for styling
+- React 18 with TypeScript
+- Chart.js for performance graphs
+- tsparticles for animated background
+- Custom SVG circular progress components
 
-## Quick Start (Windows)
+## Quick Start
 
-**Double-click `start.bat`** — it will automatically:
+### One-Click Setup (Windows)
 
-1. ✅ Check/install Python dependencies (via pip)
-2. ✅ Check/install Node.js (via winget if missing)
-3. ✅ Install frontend dependencies (npm install)
-4. ✅ Start the backend server (port 5000)
-5. ✅ Start the frontend dev server (port 3000)
-6. ✅ Open the dashboard in your browser
+**Double-click `start.bat`** — that's it.
 
-> **One-click setup** — no manual steps required. If Python or Node.js aren't installed, the script will guide you.
+The script automatically:
+1. ✅ Checks for Python and Node.js (installs via winget if missing)
+2. ✅ Installs backend Python dependencies
+3. ✅ Starts the backend server on port 5000
+4. ✅ Installs frontend npm packages
+5. ✅ Starts the frontend dev server on port 3000
+6. ✅ Opens the dashboard in your browser
 
-## Manual Setup
-
-### Prerequisites
-
-- Python 3.8 or higher
-- Node.js 14 or higher
-
-### Installation & Running
-
-1. **Clone the repository**
-```bash
-git clone <your-repository-url>
-cd SystemInfo
-```
-
-2. **Install backend dependencies**
-```bash
-pip install -r backend/requirements.txt
-```
-
-3. **Install frontend dependencies**
-```bash
-cd frontend
-npm install --legacy-peer-deps --ignore-scripts
-cd ..
-```
-
-4. **Start the backend** (Terminal 1)
-```bash
-cd backend
-python app.py
-```
-
-5. **Start the frontend** (Terminal 2)
-```bash
-cd frontend
-npm start
-```
-
-6. Open **http://localhost:3000** in your browser
+> If Python or Node.js aren't installed, the script will handle installation automatically.
 
 ## API Endpoints
 
-- `GET /api/system-info` — Core system metrics and platform information
-- `GET /api/hardware-info` — Detailed hardware specifications
-- `GET /api/health` — Health check
-- `POST /api/reset-io` — Reset network IO counters
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/system-info` | GET | Core system metrics (CPU, memory, disk, network, platform) |
+| `/api/hardware-info` | GET | Detailed hardware specifications (GPU, motherboard, processor, WiFi) |
+| `/api/health` | GET | Health check with server timestamp |
+| `/api/reset-io` | POST | Reset network I/O counters to zero |
 
 ## Project Status
 
-🚧 **Work in Progress** — Core functionality is complete with real-time data visualization and interactive charts.
+✅ **Stable** — All core features complete:
+- Real-time system monitoring with 5-second refresh
+- CPU, memory, disk, and network visualization
+- Hardware detection (GPU, motherboard, WiFi adapters)
+- Hybrid CPU core detection (P-cores vs E-cores)
+- Historical performance tracking with configurable time windows
+- Dark/Light theme support
+- Animated particle background
+- Responsive sidebar navigation

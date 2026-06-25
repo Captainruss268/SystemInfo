@@ -1,3 +1,5 @@
+/* Light mode theming handled via CSS variables in App.css — no redundant overrides needed */
+
 .network-info-card {
   width: 100%;
   background-color: var(--card-background);
@@ -35,28 +37,11 @@
 }
 
 .interface-card {
-  background-color: #222;
+  background-color: var(--hover-color);
   padding: 1rem;
   border-radius: 5px;
   margin-bottom: 1rem;
   border-left: 3px solid var(--accent-color);
-}
-
-/* Light mode enhancements for network cards */
-[data-theme="light"] .network-info-card {
-  background-color: rgba(255, 255, 255, 0.95);
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.08);
-}
-
-[data-theme="light"] .network-section h3 {
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-}
-
-[data-theme="light"] .interface-card {
-  background-color: rgba(255, 255, 255, 0.9);
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .interface-card h4 {
@@ -88,24 +73,7 @@
   gap: 0.5rem;
 }
 
-.location-item {
-  display: flex;
-  justify-content: space-between;
-  flex-direction: column;
-  font-size: 0.9rem;
-  padding: 0.75rem;
-  border-radius: 4px;
-  background-color: #222;
-  align-items: flex-start;
-}
-
-/* Light mode for small cards */
-[data-theme="light"] .location-item {
-  background-color: rgba(255, 255, 255, 0.9);
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-}
-
+.location-item,
 .ip-item {
   display: flex;
   justify-content: space-between;
@@ -113,48 +81,25 @@
   font-size: 0.9rem;
   padding: 0.75rem;
   border-radius: 4px;
-  background-color: #222;
+  background-color: var(--hover-color);
   align-items: flex-start;
+}
+
+.ip-item {
   margin-bottom: 0.5rem;
 }
 
-/* Light mode for IP cards */
-[data-theme="light"] .ip-item {
-  background-color: rgba(255, 255, 255, 0.9);
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-}
-
-.location-label {
-  color: var(--accent-color);
-  font-weight: 600;
-  margin-bottom: 0.25rem;
-}
-
-.location-value {
-  color: #ffffff;
-  font-size: 0.95rem;
-}
-
-/* Light mode text */
-[data-theme="light"] .location-value {
-  color: #2d2d2d;
-}
-
+.location-label,
 .ip-label {
   color: var(--accent-color);
   font-weight: 600;
   margin-bottom: 0.25rem;
 }
 
+.location-value,
 .ip-value {
-  color: #ffffff;
+  color: var(--primary-text-color);
   font-size: 0.95rem;
-}
-
-/* Light mode text */
-[data-theme="light"] .ip-value {
-  color: #2d2d2d;
 }
 
 .io-header {
@@ -163,45 +108,35 @@
   align-items: center;
 }
 
-.io-stats, .connections-list {
+.io-stats,
+.connections-list {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 0.75rem;
 }
 
-.stat-item, .connection-item {
+.stat-item,
+.connection-item {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   font-size: 0.9rem;
   padding: 0.75rem;
   border-radius: 4px;
-  background-color: #222;
+  background-color: var(--hover-color);
 }
 
-/* Light mode for stat and connection items */
-[data-theme="light"] .stat-item,
-[data-theme="light"] .connection-item {
-  background-color: rgba(255, 255, 255, 0.9);
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-}
-
-.stat-label, .connection-address {
+.stat-label,
+.connection-address {
   color: var(--accent-color);
   font-weight: 600;
   margin-bottom: 0.25rem;
 }
 
-.stat-value, .connection-status {
-  color: #ffffff;
+.stat-value,
+.connection-status {
+  color: var(--primary-text-color);
   font-size: 0.95rem;
-}
-
-/* Light mode text */
-[data-theme="light"] .stat-value,
-[data-theme="light"] .connection-status {
-  color: #2d2d2d;
 }
 
 .reset-button {
