@@ -15,12 +15,6 @@ const SidebarNavigation: React.FC = () => {
   ];
 
   const updateActiveSection = useCallback(() => {
-    const sections = [
-      { id: 'system', label: 'System & CPU', selector: '.system-info-card' },
-      { id: 'hardware', label: 'Hardware', selector: '.hardware-info-card' },
-      { id: 'network', label: 'Network', selector: '.network-info-card' },
-      { id: 'performance', label: 'Performance', selector: '.performance-chart-container' },
-    ];
     if (scrollLock.current) return;
     let closestId = sections[0].id;
     let closestDist = Infinity;

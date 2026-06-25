@@ -1,16 +1,15 @@
-import CircularProgress from './CircularProgress';
 import './SystemInfoCard.css';
 
-const formatBytes = (bytes, decimals = 2) => {
-  if (bytes === 0) return '0 Bytes';
-  const k = 1024;
-  const dm = decimals < 0 ? 0 : decimals;
-  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
-};
-
 const SystemInfoCard = ({ data, hardwareData }) => {
+  const formatBytes = (bytes, decimals = 2) => {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const dm = decimals < 0 ? 0 : decimals;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+  };
+
   if (!data || !hardwareData) return null;
 
   const { platform, cpu, memory, disk } = data;
@@ -56,7 +55,17 @@ const SystemInfoCard = ({ data, hardwareData }) => {
               <p>Used: {formatBytes(memory.used)}</p>
             </div>
             <div className="circle-chart">
-              <CircularProgress value={memory.percent} label={`${memory.percent.toFixed(1)}%`} />
+              <svg width="120" height="120" viewBox="0 0 120 120">
+                <circle cx="60" cy="60" r="50" stroke="#ddd" strokeWidth="6" fill="none" />
+                <circle
+                  cx="60" cy="60" r="50" stroke="#4ecdc4" strokeWidth="6" fill="none"
+                  strokeDasharray={`${2 * Math.PI * 50}`} strokeDashoffset={`${2 * Math.PI * 50 * (1 - memory.percent / 100)}`}
+                  transform="rotate(-90 60 60)"
+                />
+                <text x="60" y="65" textAnchor="middle" fontSize="20" className="chart-text" fontWeight="bold">
+                  {memory.percent.toFixed(1)}%
+                </text>
+              </svg>
             </div>
           </div>
         </div>
@@ -65,12 +74,28 @@ const SystemInfoCard = ({ data, hardwareData }) => {
           <h3>CPU Temperature</h3>
           <div className="cpu-temperature-chart">
             {cpu.temperatures && cpu.temperatures.length > 0 ? (
-              <CircularProgress
-                value={cpu.temperatures[0].current}
-                maxValue={100}
-                label={`${cpu.temperatures[0].current.toFixed(0)}°C`}
-                strokeColor="#ff6b35"
-              />
+              (() => {
+                const temp = cpu.temperatures[0].current;
+                const maxTemp = 100;
+                const percent = Math.min((temp / maxTemp) * 100, 100);
+                const circumference = 2 * Math.PI * 50;
+                const strokeLength = circumference * (percent / 100);
+
+                return (
+                  <svg width="120" height="120" viewBox="0 0 120 120">
+                    <circle cx="60" cy="60" r="50" stroke="#ddd" strokeWidth="6" fill="none" />
+                    <circle
+                      cx="60" cy="60" r="50" stroke="#ff6b35" strokeWidth="6" fill="none"
+                      strokeDasharray={`${circumference}`}
+                      strokeDashoffset={`${circumference - strokeLength}`}
+                      transform="rotate(-90 60 60)"
+                    />
+                    <text x="60" y="65" textAnchor="middle" fontSize="20" className="chart-text" fontWeight="bold">
+                      {temp.toFixed(0)}°C
+                    </text>
+                  </svg>
+                );
+              })()
             ) : (
               <div className="cpu-temp-placeholder">
                 <svg width="120" height="120" viewBox="0 0 120 120">
@@ -87,7 +112,18 @@ const SystemInfoCard = ({ data, hardwareData }) => {
         <div className="info-item cpu-usage-summary-item">
           <h3>CPU Usage</h3>
           <div className="cpu-usage-chart">
-            <CircularProgress value={parseFloat(avgCpuUsage)} label={`${avgCpuUsage}%`} />
+            <svg width="120" height="120" viewBox="0 0 120 120">
+              <circle cx="60" cy="60" r="50" stroke="#ddd" strokeWidth="6" fill="none" />
+              <circle
+                cx="60" cy="60" r="50" stroke="#4ecdc4" strokeWidth="6" fill="none"
+                strokeDasharray={`${2 * Math.PI * 50}`}
+                strokeDashoffset={`${2 * Math.PI * 50 * (1 - parseFloat(avgCpuUsage) / 100)}`}
+                transform="rotate(-90 60 60)"
+              />
+              <text x="60" y="65" textAnchor="middle" fontSize="20" className="chart-text" fontWeight="bold">
+                {avgCpuUsage}%
+              </text>
+            </svg>
           </div>
         </div>
 
@@ -136,11 +172,17 @@ const SystemInfoCard = ({ data, hardwareData }) => {
                     <p>Free: {formatBytes(diskItem.free)}</p>
                   </div>
                   <div className="disk-usage-chart">
-                    <CircularProgress
-                      value={diskItem.percent}
-                      label={`${diskItem.percent.toFixed(1)}%`}
-                      strokeColor="#ff6b6b"
-                    />
+                    <svg width="120" height="120" viewBox="0 0 120 120">
+                      <circle cx="60" cy="60" r="50" stroke="#ddd" strokeWidth="8" fill="none" />
+                      <circle
+                        cx="60" cy="60" r="50" stroke="#ff6b6b" strokeWidth="8" fill="none"
+                        strokeDasharray={`${2 * Math.PI * 50}`} strokeDashoffset={`${2 * Math.PI * 50 * (1 - diskItem.percent / 100)}`}
+                        transform="rotate(-90 60 60)"
+                      />
+                      <text x="60" y="65" textAnchor="middle" fontSize="18" className="chart-text" fontWeight="bold">
+                        {diskItem.percent.toFixed(1)}%
+                      </text>
+                    </svg>
                   </div>
                 </div>
               </div>

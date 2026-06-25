@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import SystemInfoCard from './components/SystemInfoCard';
 import NetworkInfoCard from './components/NetworkInfoCard';
 import HardwareInfoCard from './components/HardwareInfoCard';
@@ -10,7 +10,6 @@ import SidebarNavigation from './components/SidebarNavigation';
 import { ThemeProvider } from './context/ThemeContext';
 import { useHistoricalData } from './hooks/useHistoricalData';
 import { SystemInfoData, HardwareInfo } from './types';
-import { API_BASE_URL } from './config';
 import './App.css';
 
 // Main app content component
@@ -18,7 +17,7 @@ const AppContent: React.FC = () => {
   const [systemInfo, setSystemInfo] = useState<SystemInfoData | null>(null);
   const [hardwareInfo, setHardwareInfo] = useState<HardwareInfo | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const { historicalData, addDataPoint, clearData, changeTimeWindow, timeWindow, maxPoints } = useHistoricalData();
+  const { historicalData, addDataPoint, startTracking, clearData, changeTimeWindow, timeWindow, maxPoints } = useHistoricalData();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -28,16 +27,20 @@ const AppContent: React.FC = () => {
 
         // Fetch system and hardware info in parallel with timeout
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 10000);
+        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
 
         const [systemResponse, hardwareResponse] = await Promise.all([
-          fetch(`${API_BASE_URL}/api/system-info`, {
+          fetch('http://localhost:5000/api/system-info', {
             signal: controller.signal,
-            headers: { 'Cache-Control': 'no-cache' }
+            headers: {
+              'Cache-Control': 'no-cache'
+            }
           }),
-          fetch(`${API_BASE_URL}/api/hardware-info`, {
+          fetch('http://localhost:5000/api/hardware-info', {
             signal: controller.signal,
-            headers: { 'Cache-Control': 'no-cache' }
+            headers: {
+              'Cache-Control': 'no-cache'
+            }
           })
         ]);
 
@@ -71,10 +74,10 @@ const AppContent: React.FC = () => {
     };
 
     fetchData();
-    const intervalId = setInterval(fetchData, 5000);
+    const intervalId = setInterval(fetchData, 5000); // Changed from 1000ms to 5000ms
 
     return () => clearInterval(intervalId);
-  }, [addDataPoint]);
+  }, []);
 
   return (
     <div className="app-container">

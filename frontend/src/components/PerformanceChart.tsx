@@ -38,46 +38,61 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({
   onClearData,
   onChangeTimeWindow,
 }) => {
+  const maxSeconds = timeWindow * 60;
+
   const networkChartData = useMemo(() => {
-    const labels: string[] = [];
-    const values: number[] = [];
+    const points: { x: number; y: number }[] = [];
 
-    // Keep only data points within the time window
+    if (data.length <= 1) {
+      return {
+        datasets: [
+          {
+            label: 'Network (MB/s)',
+            data: points,
+            borderColor: '#4ecdc4',
+            backgroundColor: 'rgba(78, 205, 196, 0.1)',
+            tension: 0.4,
+            fill: true,
+            pointRadius: 3,
+            pointBackgroundColor: '#4ecdc4',
+            spanGaps: false,
+          },
+        ],
+      };
+    }
+
     const windowMs = timeWindow * 60 * 1000;
-    const latestTime = data.length > 0 ? data[data.length - 1].timestamp : Date.now();
-    const windowStart = latestTime - windowMs;
-
+    const newestTime = data[data.length - 1].timestamp;
+    const windowStart = newestTime - windowMs;
     const filtered = data.filter(d => d.timestamp >= windowStart);
 
     for (let i = 1; i < filtered.length; i++) {
       const prev = filtered[i - 1];
       const curr = filtered[i];
       const timeDiff = (curr.timestamp - prev.timestamp) / 1000;
-      if (timeDiff <= 0) {
-        values.push(0);
-      } else {
+      let mbps = 0;
+      if (timeDiff > 0) {
         const bytesSent = Math.max(0, curr.network_bytes_sent - prev.network_bytes_sent);
         const bytesRecv = Math.max(0, curr.network_bytes_recv - prev.network_bytes_recv);
         const bytesPerSecond = (bytesSent + bytesRecv) / timeDiff;
-        const mbps = Math.round(bytesPerSecond / (1024 * 1024) * 100) / 100;
-        values.push(mbps);
+        mbps = Math.round(bytesPerSecond / (1024 * 1024) * 100) / 100;
       }
-      // Relative time: seconds ago from latest
-      const secsAgo = Math.round((latestTime - curr.timestamp) / 1000);
-      labels.push(`${secsAgo}s`);
+      const secondsAgo = Math.round((newestTime - curr.timestamp) / 1000);
+      points.push({ x: secondsAgo, y: mbps });
     }
 
     return {
-      labels,
       datasets: [
         {
           label: 'Network (MB/s)',
-          data: values,
+          data: points,
           borderColor: '#4ecdc4',
           backgroundColor: 'rgba(78, 205, 196, 0.1)',
           tension: 0.4,
           fill: true,
-          pointRadius: 0,
+          pointRadius: 3,
+          pointBackgroundColor: '#4ecdc4',
+          spanGaps: false,
         },
       ],
     };
@@ -86,14 +101,14 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({
   const networkOptions: ChartOptions<'line'> = {
     responsive: true,
     maintainAspectRatio: false,
-    clip: { left: 5, top: 5, right: 5, bottom: 5 },
+    clip: { left: 0, top: 5, right: 5, bottom: 5 },
     interaction: {
       mode: 'index' as const,
       intersect: false,
     },
     layout: {
       padding: {
-        left: 15,
+        left: 0,
         right: 15,
         top: 5,
         bottom: 5,
@@ -115,23 +130,27 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({
         mode: 'index' as const,
         intersect: false,
         callbacks: {
-          title: (tooltipItems) => `Time: ${tooltipItems[0].label}`,
+          title: (tooltipItems) => `Time: ${Math.round(tooltipItems[0].parsed.x as number)}s`,
           label: (tooltipItem) => `${tooltipItem.dataset.label}: ${tooltipItem.parsed.y} MB/s`,
         },
       },
     },
     scales: {
       x: {
+        type: 'linear',
         display: true,
+        min: 0,
+        max: maxSeconds,
+        beginAtZero: true,
         title: {
           display: true,
-          text: 'Time',
+          text: 'Seconds ago',
         },
         ticks: {
-          maxTicksLimit: 12,
           font: { size: 10 },
-          autoSkipPadding: 10,
-          maxRotation: 30,
+          maxRotation: 0,
+          maxTicksLimit: 6,
+          callback: (value) => `${Math.round(value as number)}s`,
         },
         grid: {
           display: true,

@@ -1,15 +1,13 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { HistoricalDataPoint, SystemInfoData } from '../types';
 
-const INTERVAL_MS = 5000;
+const INTERVAL_MS = 1000;
 
 export const useHistoricalData = () => {
   const [historicalData, setHistoricalData] = useState<HistoricalDataPoint[]>([]);
   const [timeWindow, setTimeWindow] = useState<number>(5); // minutes
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const lastDataRef = useRef<SystemInfoData | null>(null);
-  // Use a ref so addDataPoint always has the latest timeWindow in its closure
-  const timeWindowRef = useRef<number>(timeWindow * 60 * 1000);
-  timeWindowRef.current = timeWindow * 60 * 1000;
 
   const clearData = useCallback(() => setHistoricalData([]), []);
 
@@ -19,7 +17,7 @@ export const useHistoricalData = () => {
     setHistoricalData(prev => prev.slice(-maxPoints));
   }, []);
 
-  const addDataPoint = useCallback((data: SystemInfoData) => {
+  const addDataPoint = (data: SystemInfoData) => {
     const now = Date.now();
     const newPoint: HistoricalDataPoint = {
       timestamp: now,
@@ -31,24 +29,53 @@ export const useHistoricalData = () => {
 
     setHistoricalData(prev => {
       const updated = [...prev, newPoint];
-      const windowMs = timeWindowRef.current;
-      const maxPoints = Math.floor(windowMs / INTERVAL_MS);
-      // Keep only points within the current time window
-      const cutoff = now - windowMs;
-      const filtered = updated.filter(d => d.timestamp >= cutoff);
-      return filtered.length > maxPoints ? filtered.slice(-maxPoints) : filtered;
+      const maxPoints = Math.floor(timeWindowRef.current / (INTERVAL_MS / 1000));
+      if (updated.length > maxPoints) {
+        return updated.slice(-maxPoints);
+      }
+      return updated;
     });
 
     lastDataRef.current = data;
-  }, []); // stable ref — no reactive deps needed
+  };
+
+  // Use a ref so the addDataPoint closure always has the latest timeWindow
+  const timeWindowRef = useRef(timeWindow * 60 * 1000);
+  useEffect(() => { timeWindowRef.current = timeWindow * 60 * 1000; }, [timeWindow]);
 
   const maxPoints = Math.floor((timeWindow * 60 * 1000) / INTERVAL_MS);
+
+  const startTracking = () => {
+    if (intervalRef.current) return;
+    intervalRef.current = setInterval(() => {
+      if (lastDataRef.current) {
+        addDataPoint(lastDataRef.current);
+      }
+    }, INTERVAL_MS);
+  };
+
+  const stopTracking = () => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+  };
+
+  useEffect(() => {
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
+  }, []);
 
   return {
     historicalData,
     timeWindow,
     maxPoints,
     addDataPoint,
+    startTracking,
+    stopTracking,
     clearData,
     changeTimeWindow,
   };
