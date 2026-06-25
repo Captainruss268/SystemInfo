@@ -83,19 +83,6 @@ npm start
 - `GET /api/health` — Health check
 - `POST /api/reset-io` — Reset network IO counters
 
-## Troubleshooting
-
-### "node is not recognized" during npm install
-The `@tsparticles/engine` package has a postinstall script that requires `node` on PATH. The `--ignore-scripts` flag bypasses this. If you see this error, run:
-```bash
-cd frontend
-npm install --legacy-peer-deps --ignore-scripts
-```
-
-### Port already in use
-- Backend: Change the port in `backend/app.py` (look for `port=5000`)
-- Frontend: The `frontend/.env` file can set `PORT=3001` or similar
-
 ## Project Status
 
 🚧 **Work in Progress** — Core functionality is complete with real-time data visualization and interactive charts.
